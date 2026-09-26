@@ -1,0 +1,48 @@
+name: Release
+
+# Pushing a tag v<version> publishes a GitHub release with the files of `pnpm release`;
+# see docs/RELEASING.md. The tag must match the version in package.json.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm release
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="${TAG#v}"
+          cd "release/$version"
+          prerelease=()
+          case "$version" in *-*) prerelease=(--prerelease) ;; esac
+          gh release create "$TAG" --verify-tag "${prerelease[@]}" \
+            --repo "$GITHUB_REPOSITORY" --title "polyxslt $version" --notes-file NOTES.md \
+            xslt-polyfill.min.js xslt-polyfill.min.js.map polyxslt.mjs polyxslt.mjs.map \
+            "polyxslt-$version.tar.xz" SHA256SUMS SRI.txt

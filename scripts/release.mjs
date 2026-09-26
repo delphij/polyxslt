@@ -4,6 +4,8 @@
 //   polyxslt-<version>.tar.xz            source archive of the release tag (git archive)
 //   SHA256SUMS                           checksums of all of the above
 //   SRI.txt                              Subresource Integrity hashes of the builds
+//   NOTES.md                             release notes: the CHANGELOG.md section of the
+//                                        version and SRI.txt (not a release file itself)
 //
 // The working tree must be clean and HEAD must carry the tag v<version>.  With
 // --snapshot, the current commit is used instead and the files are named after it.
@@ -70,6 +72,16 @@ writeFileSync(
 writeFileSync(
   join(out, 'SRI.txt'),
   builds.map((f) => `${f}  sha384-${digest(f, 'sha384', 'base64')}\n`).join(''),
+);
+
+const section = readFileSync('CHANGELOG.md', 'utf8')
+  .split(/^## /m)
+  .find((s) => s.startsWith(`${version}\n`));
+if (!section) fail(`CHANGELOG.md has no section for ${version}`);
+writeFileSync(
+  join(out, 'NOTES.md'),
+  `${section.slice(section.indexOf('\n') + 1).trim()}\n\n` +
+    `Subresource Integrity hashes of the builds:\n\n\`\`\`\n${readFileSync(join(out, 'SRI.txt'), 'utf8')}\`\`\`\n`,
 );
 
 console.log(`release files in ${out}:`);
