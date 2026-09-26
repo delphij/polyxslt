@@ -1,0 +1,166 @@
+{
+  "xml": "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">\n  <url><loc>https://example.org/en/posts/a/</loc><lastmod>2024-05-01T10:20:30+00:00</lastmod><xhtml:link rel=\"alternate\" hreflang=\"en\" href=\"https://example.org/en/posts/a/\"/><xhtml:link rel=\"alternate\" hreflang=\"fr\" href=\"https://example.org/fr/posts/a/\"/></url>\n  <url><loc>https://example.org/tags/x/</loc><lastmod>2023-01-02</lastmod></url>\n</urlset>",
+  "ns": {
+    "s": "http://www.sitemaps.org/schemas/sitemap/0.9",
+    "xhtml": "http://www.w3.org/1999/xhtml",
+    "atom": "http://www.w3.org/2005/Atom"
+  },
+  "cases": [
+    {
+      "expr": "count(s:urlset/s:url)"
+    },
+    {
+      "expr": "count(s:urlset/s:url[contains(s:loc, '/posts/')])"
+    },
+    {
+      "expr": "count(s:urlset/s:url[not(contains(s:loc, '/posts/')) and not(contains(s:loc, '/tags/'))])"
+    },
+    {
+      "expr": "substring-after(substring-after(s:urlset/s:url[1]/s:loc, '://'), '/')"
+    },
+    {
+      "expr": "contains(substring-after(s:urlset/s:url[2]/s:loc, '://'), '/')"
+    },
+    {
+      "expr": "substring(s:urlset/s:url[1]/s:lastmod, 1, 10)"
+    },
+    {
+      "expr": "substring(s:urlset/s:url[1]/s:lastmod, 12, 5)"
+    },
+    {
+      "expr": "string-length(s:urlset/s:url[2]/s:lastmod) >= 16"
+    },
+    {
+      "expr": "xhtml:link[@href = $url]/@hreflang",
+      "nodes": true,
+      "ctx": "s:urlset/s:url[1]",
+      "vars": {
+        "url": "s:loc"
+      }
+    },
+    {
+      "expr": "$alt-lang = 'en'",
+      "ctx": "s:urlset/s:url[1]",
+      "vars": {
+        "url": "s:loc",
+        "alt-lang": "xhtml:link[@href = $url]/@hreflang"
+      }
+    },
+    {
+      "expr": "starts-with($url, $base)",
+      "ctx": "s:urlset/s:url[1]",
+      "vars": {
+        "url": "s:loc",
+        "base": "'https://example.org'"
+      }
+    },
+    {
+      "expr": "substring-after($url, $base)",
+      "ctx": "s:urlset/s:url[1]",
+      "vars": {
+        "url": "s:loc",
+        "base": "'https://example.org'"
+      }
+    },
+    {
+      "expr": "boolean(/atom:feed)",
+      "xml": "<rss><channel><title>T</title><language>en</language><item><title>A &amp; B</title><category>X</category><category>Y</category><pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate><description>&lt;p&gt;hi&lt;/p&gt;</description></item></channel></rss>"
+    },
+    {
+      "expr": "boolean(/atom:feed)",
+      "xml": "<feed xmlns=\"http://www.w3.org/2005/Atom\" xml:lang=\"zh-CN\"><title>F</title><entry><title>E</title><category term=\"X\"/><category term=\"Y\"/><published>2024-01-01T08:00:00Z</published></entry></feed>"
+    },
+    {
+      "expr": "atom:feed/atom:title | rss/channel/title",
+      "nodes": true,
+      "xml": "<rss><channel><title>T</title><language>en</language><item><title>A &amp; B</title><category>X</category><category>Y</category><pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate><description>&lt;p&gt;hi&lt;/p&gt;</description></item></channel></rss>"
+    },
+    {
+      "expr": "atom:feed/atom:title | rss/channel/title",
+      "nodes": true,
+      "xml": "<feed xmlns=\"http://www.w3.org/2005/Atom\" xml:lang=\"zh-CN\"><title>F</title><entry><title>E</title><category term=\"X\"/><category term=\"Y\"/><published>2024-01-01T08:00:00Z</published></entry></feed>"
+    },
+    {
+      "expr": "/atom:feed/@xml:lang",
+      "nodes": true,
+      "xml": "<feed xmlns=\"http://www.w3.org/2005/Atom\" xml:lang=\"zh-CN\"><title>F</title><entry><title>E</title><category term=\"X\"/><category term=\"Y\"/><published>2024-01-01T08:00:00Z</published></entry></feed>"
+    },
+    {
+      "expr": "rss/channel/language",
+      "xml": "<rss><channel><title>T</title><language>en</language><item><title>A &amp; B</title><category>X</category><category>Y</category><pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate><description>&lt;p&gt;hi&lt;/p&gt;</description></item></channel></rss>"
+    },
+    {
+      "expr": "(atom:category[not(@term='X' or @term='Z')] | category[not(.='X' or .='Z')])[1]",
+      "nodes": true,
+      "xml": "<feed xmlns=\"http://www.w3.org/2005/Atom\" xml:lang=\"zh-CN\"><title>F</title><entry><title>E</title><category term=\"X\"/><category term=\"Y\"/><published>2024-01-01T08:00:00Z</published></entry></feed>",
+      "ctx": "//atom:entry"
+    },
+    {
+      "expr": "(atom:category[not(@term='X' or @term='Z')] | category[not(.='X' or .='Z')])[1]",
+      "nodes": true,
+      "xml": "<rss><channel><title>T</title><language>en</language><item><title>A &amp; B</title><category>X</category><category>Y</category><pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate><description>&lt;p&gt;hi&lt;/p&gt;</description></item></channel></rss>",
+      "ctx": "//item"
+    },
+    {
+      "expr": "atom:category/@term | category",
+      "nodes": true,
+      "xml": "<feed xmlns=\"http://www.w3.org/2005/Atom\" xml:lang=\"zh-CN\"><title>F</title><entry><title>E</title><category term=\"X\"/><category term=\"Y\"/><published>2024-01-01T08:00:00Z</published></entry></feed>",
+      "ctx": "//atom:entry"
+    },
+    {
+      "expr": "atom:category/@term | category",
+      "nodes": true,
+      "xml": "<rss><channel><title>T</title><language>en</language><item><title>A &amp; B</title><category>X</category><category>Y</category><pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate><description>&lt;p&gt;hi&lt;/p&gt;</description></item></channel></rss>",
+      "ctx": "//item"
+    },
+    {
+      "expr": "@term | text()",
+      "nodes": true,
+      "xml": "<feed xmlns=\"http://www.w3.org/2005/Atom\" xml:lang=\"zh-CN\"><title>F</title><entry><title>E</title><category term=\"X\"/><category term=\"Y\"/><published>2024-01-01T08:00:00Z</published></entry></feed>",
+      "ctx": "//atom:category[2]"
+    },
+    {
+      "expr": "@term | text()",
+      "nodes": true,
+      "xml": "<rss><channel><title>T</title><language>en</language><item><title>A &amp; B</title><category>X</category><category>Y</category><pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate><description>&lt;p&gt;hi&lt;/p&gt;</description></item></channel></rss>",
+      "ctx": "//category[2]"
+    },
+    {
+      "expr": "substring(pubDate, 1, 16)",
+      "xml": "<rss><channel><title>T</title><language>en</language><item><title>A &amp; B</title><category>X</category><category>Y</category><pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate><description>&lt;p&gt;hi&lt;/p&gt;</description></item></channel></rss>",
+      "ctx": "//item"
+    },
+    {
+      "expr": "count(atom:feed/atom:entry | rss/channel/item)",
+      "xml": "<rss><channel><title>T</title><language>en</language><item><title>A &amp; B</title><category>X</category><category>Y</category><pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate><description>&lt;p&gt;hi&lt;/p&gt;</description></item></channel></rss>"
+    },
+    {
+      "expr": "count(atom:feed/atom:entry | rss/channel/item)",
+      "xml": "<feed xmlns=\"http://www.w3.org/2005/Atom\" xml:lang=\"zh-CN\"><title>F</title><entry><title>E</title><category term=\"X\"/><category term=\"Y\"/><published>2024-01-01T08:00:00Z</published></entry></feed>"
+    },
+    {
+      "expr": "contains($declared, 'zh-CN') or contains($declared, 'Hans')",
+      "xml": "<feed xmlns=\"http://www.w3.org/2005/Atom\" xml:lang=\"zh-CN\"><title>F</title><entry><title>E</title><category term=\"X\"/><category term=\"Y\"/><published>2024-01-01T08:00:00Z</published></entry></feed>",
+      "vars": {
+        "declared": "string(/atom:feed/@xml:lang)"
+      }
+    },
+    {
+      "expr": "normalize-space($byline) != ''",
+      "xml": "<rss><channel><title>T</title><language>en</language><item><title>A &amp; B</title><category>X</category><category>Y</category><pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate><description>&lt;p&gt;hi&lt;/p&gt;</description></item></channel></rss>",
+      "vars": {
+        "byline": "''"
+      }
+    },
+    {
+      "expr": "string(description)",
+      "xml": "<rss><channel><title>T</title><language>en</language><item><title>A &amp; B</title><category>X</category><category>Y</category><pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate><description>&lt;p&gt;hi&lt;/p&gt;</description></item></channel></rss>",
+      "ctx": "//item"
+    },
+    {
+      "expr": "atom:title | title",
+      "xml": "<rss><channel><title>T</title><language>en</language><item><title>A &amp; B</title><category>X</category><category>Y</category><pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate><description>&lt;p&gt;hi&lt;/p&gt;</description></item></channel></rss>",
+      "ctx": "//item"
+    }
+  ]
+}

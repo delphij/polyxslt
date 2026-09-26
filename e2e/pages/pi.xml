@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/page.xsl"?>
+<doc><script xmlns="http://www.w3.org/1999/xhtml" src="/dist/xslt-polyfill.min.js"></script>
+  <title>Example page</title>
+  <item>first</item>
+  <item>second</item>
+  <content>&lt;p class="c"&gt;Rich &lt;em&gt;text&lt;/em&gt;&lt;/p&gt;</content>
+</doc>

@@ -1,0 +1,26 @@
+exit 10
+runtime error: file test/fixtures/structure/global-cycle/style.xsl line 4 element variable
+Recursive definition of a
+runtime error: file test/fixtures/structure/global-cycle/style.xsl line 5 element variable
+Variable 'a' has not been declared.
+XPath error : Undefined variable: a
+runtime error: file test/fixtures/structure/global-cycle/style.xsl line 5 element variable
+Evaluating global variable  var/param being computed failed
+runtime error: file test/fixtures/structure/global-cycle/style.xsl line 4 element variable
+Variable 'b' has not been declared.
+XPath error : Undefined variable: b
+runtime error: file test/fixtures/structure/global-cycle/style.xsl line 4 element variable
+Evaluating global variable  var/param being computed failed
+runtime error: file test/fixtures/structure/global-cycle/style.xsl line 5 element variable
+Recursive definition of b
+runtime error: file test/fixtures/structure/global-cycle/style.xsl line 4 element variable
+Variable 'b' has not been declared.
+XPath error : Undefined variable: b
+runtime error: file test/fixtures/structure/global-cycle/style.xsl line 4 element variable
+Evaluating global variable  var/param being computed failed
+runtime error: file test/fixtures/structure/global-cycle/style.xsl line 5 element variable
+Variable 'a' has not been declared.
+XPath error : Undefined variable: a
+runtime error: file test/fixtures/structure/global-cycle/style.xsl line 5 element variable
+Evaluating global variable  var/param being computed failed
+no result for test/fixtures/structure/global-cycle/in.xml

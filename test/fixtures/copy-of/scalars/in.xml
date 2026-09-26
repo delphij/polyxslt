@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doc a="1" b="2"><p class="x">one <b>two</b></p><t>text <![CDATA[<cdata>]]> after</t><!-- c --><?pi data?></doc>

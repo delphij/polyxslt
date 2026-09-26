@@ -1,0 +1,3 @@
+exit 5
+compilation error: file test/fixtures/instructions/avt-unclosed/style.xsl line 7 element a
+Attribute 'href': The AVT has an unmatched '{'.

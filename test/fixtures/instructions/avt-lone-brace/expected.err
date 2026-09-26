@@ -1,0 +1,6 @@
+exit 9
+compilation error: file test/fixtures/instructions/avt-lone-brace/style.xsl line 7 element a
+Attribute 'href': The AVT has an unmatched '}'.
+runtime error: file test/fixtures/instructions/avt-lone-brace/style.xsl line 7 element a
+Internal error: Failed to evaluate the AVT of attribute 'href'.
+no result for test/fixtures/instructions/avt-lone-brace/in.xml

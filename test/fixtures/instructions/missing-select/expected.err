@@ -1,0 +1,3 @@
+exit 5
+compilation error: file test/fixtures/instructions/missing-select/style.xsl line 8 element value-of
+xsl:value-of : select is missing

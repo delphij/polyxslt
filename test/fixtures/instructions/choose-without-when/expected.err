@@ -1,0 +1,4 @@
+exit 9
+runtime error: file test/fixtures/instructions/choose-without-when/style.xsl line 7 element choose
+xsl:choose: xsl:when expected first
+no result for test/fixtures/instructions/choose-without-when/in.xml

@@ -1,0 +1,4 @@
+exit 9
+runtime error: file test/fixtures/instructions/variable-redefinition/style.xsl line 9 element variable
+XSLT-variable: Redefinition of variable 'v'.
+no result for test/fixtures/instructions/variable-redefinition/in.xml

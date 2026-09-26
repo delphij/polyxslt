@@ -1,0 +1,332 @@
+{
+  "xml": "<?xml version=\"1.0\"?>\n<!DOCTYPE doc>\n<?top data?>\n<doc xmlns:a=\"urn:a\" n=\"0\" xml:lang=\"en\">\n  <!-- first -->\n  <sec n=\"1\" a:k=\"v\">\n    <p>one</p>\n    <p class=\"x\">two<b>bold</b>tail</p>\n    <?inner content?>\n  </sec>\n  <sec n=\"2\" xml:id=\"s2\">\n    <p>three</p>\n    <a:p>four</a:p>\n    <q>mixed <![CDATA[cdata <here>]]> after</q>\n  </sec>\n  <empty/>\n</doc>\n",
+  "ns": {
+    "a": "urn:a"
+  },
+  "cases": [
+    {
+      "expr": "/",
+      "nodes": true
+    },
+    {
+      "expr": "doc",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec/p",
+      "nodes": true
+    },
+    {
+      "expr": "//p",
+      "nodes": true
+    },
+    {
+      "expr": "//p[2]",
+      "nodes": true
+    },
+    {
+      "expr": "(//p)[2]",
+      "nodes": true
+    },
+    {
+      "expr": "//p[last()]",
+      "nodes": true
+    },
+    {
+      "expr": "//p[position() > 1]",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec[2]/*",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/*/a:p",
+      "nodes": true
+    },
+    {
+      "expr": "//a:*",
+      "nodes": true
+    },
+    {
+      "expr": "//@*",
+      "nodes": true
+    },
+    {
+      "expr": "//@a:k",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/@xml:lang",
+      "nodes": true
+    },
+    {
+      "expr": "//text()",
+      "nodes": true
+    },
+    {
+      "expr": "//q/text()",
+      "nodes": true
+    },
+    {
+      "expr": "count(//q/text())"
+    },
+    {
+      "expr": "string(//q)"
+    },
+    {
+      "expr": "//comment()",
+      "nodes": true
+    },
+    {
+      "expr": "//processing-instruction()",
+      "nodes": true
+    },
+    {
+      "expr": "//processing-instruction('inner')",
+      "nodes": true
+    },
+    {
+      "expr": "/processing-instruction()",
+      "nodes": true
+    },
+    {
+      "expr": "/node()",
+      "nodes": true
+    },
+    {
+      "expr": "count(/node())"
+    },
+    {
+      "expr": "//b/ancestor::*",
+      "nodes": true
+    },
+    {
+      "expr": "//b/ancestor-or-self::*",
+      "nodes": true
+    },
+    {
+      "expr": "//b/ancestor::*[1]",
+      "nodes": true
+    },
+    {
+      "expr": "//b/ancestor::*[last()]",
+      "nodes": true
+    },
+    {
+      "expr": "//b/parent::p",
+      "nodes": true
+    },
+    {
+      "expr": "//b/..",
+      "nodes": true
+    },
+    {
+      "expr": "//b/following::node()",
+      "nodes": true
+    },
+    {
+      "expr": "//b/preceding::node()",
+      "nodes": true
+    },
+    {
+      "expr": "//b/preceding::*[1]",
+      "nodes": true
+    },
+    {
+      "expr": "//b/following-sibling::node()",
+      "nodes": true
+    },
+    {
+      "expr": "//b/preceding-sibling::node()",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec[1]/following-sibling::*",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec[2]/preceding-sibling::*[1]",
+      "nodes": true
+    },
+    {
+      "expr": "//p/descendant::node()",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/descendant-or-self::sec",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec/self::sec",
+      "nodes": true
+    },
+    {
+      "expr": "//sec[@n='2']/p",
+      "nodes": true
+    },
+    {
+      "expr": "//sec/@n/..",
+      "nodes": true
+    },
+    {
+      "expr": "//sec/@n/following::p",
+      "nodes": true
+    },
+    {
+      "expr": "//sec/@n/preceding::node()",
+      "nodes": true,
+      "divergence": "libxslt does not return this node-set in document order"
+    },
+    {
+      "expr": "//@n/following-sibling::node()",
+      "nodes": true
+    },
+    {
+      "expr": "//@n/ancestor::node()",
+      "nodes": true
+    },
+    {
+      "expr": "//@n/parent::node()",
+      "nodes": true
+    },
+    {
+      "expr": "//@n/self::node()",
+      "nodes": true
+    },
+    {
+      "expr": "//@n/child::node()",
+      "nodes": true
+    },
+    {
+      "expr": "//@n/descendant-or-self::node()",
+      "nodes": true
+    },
+    {
+      "expr": "//p[b]",
+      "nodes": true
+    },
+    {
+      "expr": "//p[not(@class)]",
+      "nodes": true
+    },
+    {
+      "expr": "//*[@class='x']",
+      "nodes": true
+    },
+    {
+      "expr": "//p[. = 'one' or . = 'three']",
+      "nodes": true
+    },
+    {
+      "expr": "//sec[p][2]",
+      "nodes": true
+    },
+    {
+      "expr": "//sec/p[1][. = 'three']",
+      "nodes": true
+    },
+    {
+      "expr": "//p[1]/following::p[1]",
+      "nodes": true
+    },
+    {
+      "expr": "//p | //b",
+      "nodes": true
+    },
+    {
+      "expr": "(//b | //p)[1]",
+      "nodes": true
+    },
+    {
+      "expr": "(/doc/sec[2]/p | /doc/sec[1]/p)[last()]",
+      "nodes": true
+    },
+    {
+      "expr": "p",
+      "nodes": true,
+      "ctx": "/doc/sec[1]"
+    },
+    {
+      "expr": "../sec",
+      "nodes": true,
+      "ctx": "/doc/sec[2]"
+    },
+    {
+      "expr": ".",
+      "nodes": true,
+      "ctx": "//b"
+    },
+    {
+      "expr": "/",
+      "nodes": true,
+      "ctx": "//b"
+    },
+    {
+      "expr": "following::*",
+      "nodes": true,
+      "ctx": "//a:p"
+    },
+    {
+      "expr": "@*",
+      "nodes": true,
+      "ctx": "/doc"
+    },
+    {
+      "expr": "child::sec/child::p",
+      "nodes": true
+    },
+    {
+      "expr": "descendant::b",
+      "nodes": true
+    },
+    {
+      "expr": "*",
+      "nodes": true
+    },
+    {
+      "expr": "//*[local-name() = 'p']",
+      "nodes": true
+    },
+    {
+      "expr": "//sec[2]//text()",
+      "nodes": true
+    },
+    {
+      "expr": "//sec//p[1]",
+      "nodes": true
+    },
+    {
+      "expr": "/descendant::p[1]",
+      "nodes": true
+    },
+    {
+      "expr": "//node()[3]",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec[last()]/p[last()]",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec[position() = last() - 1]",
+      "nodes": true
+    },
+    {
+      "expr": "//p[position() mod 2 = 1]",
+      "nodes": true
+    },
+    {
+      "expr": "//*[@n > 0]",
+      "nodes": true
+    },
+    {
+      "expr": "//*[@n][2]",
+      "nodes": true
+    }
+  ]
+}

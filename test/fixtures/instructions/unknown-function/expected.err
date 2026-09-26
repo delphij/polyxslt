@@ -1,0 +1,5 @@
+exit 10
+XPath error : Unregistered function: no-such-function
+runtime error: file test/fixtures/instructions/unknown-function/style.xsl line 8 element value-of
+XPath evaluation returned no result.
+no result for test/fixtures/instructions/unknown-function/in.xml

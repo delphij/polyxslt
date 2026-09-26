@@ -1,0 +1,277 @@
+{
+  "xml": "<doc><n>1</n><n>2</n><n>3</n><s>abc</s><e/><f>1.5</f><div>7</div><mod>2</mod><and>1</and><or>0</or><text>t</text></doc>",
+  "cases": [
+    {
+      "expr": "1 + 2"
+    },
+    {
+      "expr": "5 - 3 - 1"
+    },
+    {
+      "expr": "2 * 3 + 4"
+    },
+    {
+      "expr": "2 + 3 * 4"
+    },
+    {
+      "expr": "10 div 4"
+    },
+    {
+      "expr": "10 mod 3"
+    },
+    {
+      "expr": "-10 mod 3"
+    },
+    {
+      "expr": "10 mod -3"
+    },
+    {
+      "expr": "5.5 mod 2"
+    },
+    {
+      "expr": "-3"
+    },
+    {
+      "expr": "- -3"
+    },
+    {
+      "expr": "1 - -1"
+    },
+    {
+      "expr": "2 div 0"
+    },
+    {
+      "expr": "-2 div 0"
+    },
+    {
+      "expr": "0 div 0"
+    },
+    {
+      "expr": "1 div 0 - 1 div 0"
+    },
+    {
+      "expr": "1 = 1"
+    },
+    {
+      "expr": "1 = '1'"
+    },
+    {
+      "expr": "'1' = 1.0"
+    },
+    {
+      "expr": "'abc' = 'abc'"
+    },
+    {
+      "expr": "true() = 1"
+    },
+    {
+      "expr": "false() = ''"
+    },
+    {
+      "expr": "1 != 1"
+    },
+    {
+      "expr": "'a' != 'b'"
+    },
+    {
+      "expr": "1 < 2"
+    },
+    {
+      "expr": "'10' < '9'"
+    },
+    {
+      "expr": "'a' < 'b'"
+    },
+    {
+      "expr": "true() > false()"
+    },
+    {
+      "expr": "/doc/n = 2"
+    },
+    {
+      "expr": "/doc/n != 2"
+    },
+    {
+      "expr": "/doc/n = '2'"
+    },
+    {
+      "expr": "/doc/n > 2"
+    },
+    {
+      "expr": "/doc/n < 1"
+    },
+    {
+      "expr": "/doc/n = /doc/f"
+    },
+    {
+      "expr": "/doc/n != /doc/n"
+    },
+    {
+      "expr": "/doc/n = /doc/n"
+    },
+    {
+      "expr": "/doc/missing = ''"
+    },
+    {
+      "expr": "/doc/missing != ''"
+    },
+    {
+      "expr": "/doc/missing = /doc/missing"
+    },
+    {
+      "expr": "/doc/n = true()"
+    },
+    {
+      "expr": "/doc/missing = false()"
+    },
+    {
+      "expr": "/doc/e = ''"
+    },
+    {
+      "expr": "2 = /doc/n"
+    },
+    {
+      "expr": "3 > /doc/n"
+    },
+    {
+      "expr": "/doc/n >= 3"
+    },
+    {
+      "expr": "/doc/n <= /doc/f"
+    },
+    {
+      "expr": "/doc/f > /doc/n"
+    },
+    {
+      "expr": "1 and 0"
+    },
+    {
+      "expr": "1 or 0"
+    },
+    {
+      "expr": "'' or /doc/n"
+    },
+    {
+      "expr": "not(0) and 'x'"
+    },
+    {
+      "expr": "1 = 1 or 1 div 0"
+    },
+    {
+      "expr": "1 < 2 = true()"
+    },
+    {
+      "expr": "3 > 2 > 1"
+    },
+    {
+      "expr": "1 + 2 = 3 and 2 * 2 = 4"
+    },
+    {
+      "expr": "1 or 0 and 0"
+    },
+    {
+      "expr": "count(/doc/n | /doc/n)"
+    },
+    {
+      "expr": "count(/doc/n | /doc/s)"
+    },
+    {
+      "expr": "/doc/s | /doc/n",
+      "nodes": true
+    },
+    {
+      "expr": "-/doc/n"
+    },
+    {
+      "expr": "div",
+      "nodes": true,
+      "ctx": "/doc"
+    },
+    {
+      "expr": "div div mod",
+      "ctx": "/doc"
+    },
+    {
+      "expr": "and and or",
+      "ctx": "/doc"
+    },
+    {
+      "expr": "mod mod mod",
+      "ctx": "/doc"
+    },
+    {
+      "expr": "n * n",
+      "ctx": "/doc"
+    },
+    {
+      "expr": "count(*)",
+      "ctx": "/doc"
+    },
+    {
+      "expr": "text",
+      "nodes": true,
+      "ctx": "/doc"
+    },
+    {
+      "expr": "count(text())",
+      "ctx": "/doc"
+    },
+    {
+      "expr": "1e3"
+    },
+    {
+      "expr": "1.5E-2"
+    },
+    {
+      "expr": ".5"
+    },
+    {
+      "expr": "5."
+    },
+    {
+      "expr": "1.0"
+    },
+    {
+      "expr": "010"
+    },
+    {
+      "expr": "'a\"b'"
+    },
+    {
+      "expr": "\"a'b\""
+    },
+    {
+      "expr": "'://'"
+    },
+    {
+      "expr": "concat('a', '//b')"
+    },
+    {
+      "expr": " 1\t+\n2 "
+    },
+    {
+      "expr": "/ doc / n [ 2 ]",
+      "nodes": true
+    },
+    {
+      "expr": "//n[2]",
+      "nodes": true
+    },
+    {
+      "expr": "n[2] * 3",
+      "ctx": "/doc"
+    },
+    {
+      "expr": "-n",
+      "ctx": "/doc"
+    },
+    {
+      "expr": "n - 1",
+      "ctx": "/doc"
+    },
+    {
+      "expr": "n -1",
+      "ctx": "/doc"
+    }
+  ]
+}

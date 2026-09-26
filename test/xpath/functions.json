@@ -1,0 +1,346 @@
+{
+  "xml": "<doc xmlns:a=\"urn:a\" xml:lang=\"en-US\"><a:item a:attr=\"1\" b=\"2\">x</a:item><s>  hello \t  world  </s><u>😀a😀b</u><v>12</v><v>3.5</v><v>abc</v><w xml:lang=\"de\"><x/></w><?target data?><y xml:id=\"i1\"/><y xml:id=\"i2\"/><z> 7 </z></doc>",
+  "ns": {
+    "a": "urn:a"
+  },
+  "cases": [
+    {
+      "expr": "last()"
+    },
+    {
+      "expr": "position()"
+    },
+    {
+      "expr": "count(//v)"
+    },
+    {
+      "expr": "count(/)"
+    },
+    {
+      "expr": "name(/doc/*[1])"
+    },
+    {
+      "expr": "local-name(/doc/*[1])"
+    },
+    {
+      "expr": "namespace-uri(/doc/*[1])"
+    },
+    {
+      "expr": "name(/doc/*[1]/@*)"
+    },
+    {
+      "expr": "name(//@b)"
+    },
+    {
+      "expr": "local-name(//@a:attr)"
+    },
+    {
+      "expr": "namespace-uri(//@a:attr)"
+    },
+    {
+      "expr": "namespace-uri(//@b)"
+    },
+    {
+      "expr": "name(/doc/@xml:lang)"
+    },
+    {
+      "expr": "namespace-uri(/doc/@xml:lang)"
+    },
+    {
+      "expr": "name(//processing-instruction())"
+    },
+    {
+      "expr": "local-name(//processing-instruction())"
+    },
+    {
+      "expr": "name(/)"
+    },
+    {
+      "expr": "name(//text())"
+    },
+    {
+      "expr": "name()",
+      "ctx": "/doc"
+    },
+    {
+      "expr": "name(/doc/missing)"
+    },
+    {
+      "expr": "string()",
+      "ctx": "/doc/v[2]"
+    },
+    {
+      "expr": "string(/doc/v)"
+    },
+    {
+      "expr": "string(1 div 3)"
+    },
+    {
+      "expr": "string(true())"
+    },
+    {
+      "expr": "string(/doc/missing)"
+    },
+    {
+      "expr": "concat('a', 1, true(), /doc/v)"
+    },
+    {
+      "expr": "starts-with('abc', '')"
+    },
+    {
+      "expr": "contains('abc', '')"
+    },
+    {
+      "expr": "contains('', '')"
+    },
+    {
+      "expr": "contains(/doc/s, 'hello')"
+    },
+    {
+      "expr": "starts-with(/doc/u, '😀')"
+    },
+    {
+      "expr": "substring-before('1999/04/01', '/')"
+    },
+    {
+      "expr": "substring-after('1999/04/01', '/')"
+    },
+    {
+      "expr": "substring-after('abc', '')"
+    },
+    {
+      "expr": "substring-before('abc', '')"
+    },
+    {
+      "expr": "substring-after('abc', 'x')"
+    },
+    {
+      "expr": "substring('12345', 2, 3)"
+    },
+    {
+      "expr": "substring('12345', 2)"
+    },
+    {
+      "expr": "substring('12345', 1.5, 2.6)"
+    },
+    {
+      "expr": "substring('12345', 0, 3)"
+    },
+    {
+      "expr": "substring('12345', 0 div 0, 3)"
+    },
+    {
+      "expr": "substring('12345', 1, 0 div 0)"
+    },
+    {
+      "expr": "substring('12345', -42, 1 div 0)"
+    },
+    {
+      "expr": "substring('12345', -1 div 0, 1 div 0)"
+    },
+    {
+      "expr": "substring(/doc/u, 2, 2)"
+    },
+    {
+      "expr": "substring(/doc/u, 3)"
+    },
+    {
+      "expr": "string-length(/doc/u)"
+    },
+    {
+      "expr": "string-length('')"
+    },
+    {
+      "expr": "string-length()",
+      "ctx": "/doc/s"
+    },
+    {
+      "expr": "normalize-space(/doc/s)"
+    },
+    {
+      "expr": "normalize-space()",
+      "ctx": "/doc/s"
+    },
+    {
+      "expr": "normalize-space(' a  b')"
+    },
+    {
+      "expr": "translate('bar', 'abc', 'ABC')"
+    },
+    {
+      "expr": "translate('--aaa--', 'abc-', 'ABC')"
+    },
+    {
+      "expr": "translate('aaa', 'aa', 'bc')"
+    },
+    {
+      "expr": "translate(/doc/u, '😀', 'x')"
+    },
+    {
+      "expr": "boolean(0)"
+    },
+    {
+      "expr": "boolean(0 div 0)"
+    },
+    {
+      "expr": "boolean('')"
+    },
+    {
+      "expr": "boolean(' ')"
+    },
+    {
+      "expr": "boolean(/doc/missing)"
+    },
+    {
+      "expr": "not(1)"
+    },
+    {
+      "expr": "true()"
+    },
+    {
+      "expr": "false()"
+    },
+    {
+      "expr": "lang('de')",
+      "ctx": "/doc/w/x"
+    },
+    {
+      "expr": "lang('DE')",
+      "ctx": "/doc/w/x"
+    },
+    {
+      "expr": "lang('en')",
+      "ctx": "/doc/w/x"
+    },
+    {
+      "expr": "lang('en')",
+      "ctx": "/doc/a:item"
+    },
+    {
+      "expr": "lang('en-us')",
+      "ctx": "/doc/a:item"
+    },
+    {
+      "expr": "lang('en-')",
+      "ctx": "/doc/a:item"
+    },
+    {
+      "expr": "lang('en')",
+      "ctx": "/doc/a:item/@b"
+    },
+    {
+      "expr": "lang('en')"
+    },
+    {
+      "expr": "number('12')"
+    },
+    {
+      "expr": "number(' 12 ')"
+    },
+    {
+      "expr": "number('1e3')"
+    },
+    {
+      "expr": "number('1E3')"
+    },
+    {
+      "expr": "number('1e+3')"
+    },
+    {
+      "expr": "number('-.5')"
+    },
+    {
+      "expr": "number('+1')"
+    },
+    {
+      "expr": "number('')"
+    },
+    {
+      "expr": "number('0x10')"
+    },
+    {
+      "expr": "number('Infinity')"
+    },
+    {
+      "expr": "number('- 1')"
+    },
+    {
+      "expr": "number('1 2')"
+    },
+    {
+      "expr": "number(true())"
+    },
+    {
+      "expr": "number(/doc/v)"
+    },
+    {
+      "expr": "number(/doc/z)"
+    },
+    {
+      "expr": "number()",
+      "ctx": "/doc/v[2]"
+    },
+    {
+      "expr": "sum(/doc/v)"
+    },
+    {
+      "expr": "sum(/doc/v[position() < 3])"
+    },
+    {
+      "expr": "sum(/doc/missing)"
+    },
+    {
+      "expr": "floor(2.5)"
+    },
+    {
+      "expr": "floor(-2.5)"
+    },
+    {
+      "expr": "ceiling(2.1)"
+    },
+    {
+      "expr": "ceiling(-2.1)"
+    },
+    {
+      "expr": "round(2.5)"
+    },
+    {
+      "expr": "round(-2.5)"
+    },
+    {
+      "expr": "round(-0.4)"
+    },
+    {
+      "expr": "round(0 div 0)"
+    },
+    {
+      "expr": "round(1 div 0)"
+    },
+    {
+      "expr": "floor('x')"
+    },
+    {
+      "expr": "id('i1')",
+      "nodes": true
+    },
+    {
+      "expr": "id('i2 i1')",
+      "nodes": true
+    },
+    {
+      "expr": "id(/doc/v)",
+      "nodes": true
+    },
+    {
+      "expr": "id('nope')",
+      "nodes": true
+    },
+    {
+      "expr": "id(//y/@xml:id)",
+      "nodes": true
+    },
+    {
+      "expr": "count(//y[@xml:id])"
+    }
+  ]
+}

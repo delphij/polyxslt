@@ -1,0 +1,8 @@
+* text=auto eol=lf
+
+# Generated files: reference output from xsltproc and documents from pnpm docs:gen.
+test/fixtures/**/expected.* linguist-generated
+test/fixtures/XSLTPROC_VERSION linguist-generated
+test/xpath/*.expected.json linguist-generated
+docs/SUPPORTED.md linguist-generated
+docs/ERRORS.md linguist-generated

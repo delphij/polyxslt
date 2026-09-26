@@ -1,0 +1,4 @@
+exit 9
+runtime error: file test/fixtures/instructions/attribute-after-child/style.xsl line 9 element attribute
+xsl:attribute: Cannot add attributes to an element if children have been already added to the element.
+no result for test/fixtures/instructions/attribute-after-child/in.xml

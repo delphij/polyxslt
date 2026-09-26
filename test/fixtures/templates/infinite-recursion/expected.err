@@ -1,0 +1,22 @@
+exit 10
+runtime error: file test/fixtures/templates/infinite-recursion/style.xsl line 11 element div
+xsltApplySequenceConstructor: A potential infinite template recursion was detected.
+You can adjust xsltMaxDepth (--maxdepth) in order to raise the maximum number of nested template calls and variables/params (currently set to 3000).
+Templates:
+#0 name doc 
+#1 name doc 
+#2 name doc 
+#3 name doc 
+#4 name doc 
+#5 name doc 
+#6 name doc 
+#7 name doc 
+#8 name doc 
+#9 name doc 
+#10 name doc 
+#11 name doc 
+#12 name doc 
+#13 name doc 
+#14 name doc 
+Variables:
+no result for test/fixtures/templates/infinite-recursion/in.xml

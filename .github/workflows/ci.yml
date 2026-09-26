@@ -1,0 +1,62 @@
+name: CI
+
+# Kept within the free Actions allowance of a private repository: one Linux job, no macOS
+# runners (billed at ten times the Linux rate), and no runs for documentation-only changes.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['docs/**', '**/*.md']
+  pull_request:
+    paths-ignore: ['docs/**', '**/*.md']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm build
+      - run: pnpm size
+      - name: Check that the build is reproducible
+        run: |
+          sha256sum dist/*.js dist/*.mjs > /tmp/first.sha256
+          rm -rf dist && pnpm build
+          sha256sum -c /tmp/first.sha256
+
+      # Reference output: Homebrew's libxslt, the same build as on the developers' Macs.
+      # The Ubuntu runner image includes Homebrew, but not on PATH.
+      - name: Install libxslt
+        run: |
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          brew install libxslt
+          echo "$(brew --prefix)/bin" >> "$GITHUB_PATH"
+      - run: pnpm golden:check
+      - run: pnpm docs:check
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+      - run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - run: pnpm test
+      - run: pnpm test:e2e

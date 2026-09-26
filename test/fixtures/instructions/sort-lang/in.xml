@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doc xmlns:n="urn:n" lang="en">
+  <title>Notes &amp; errata</title>
+  <item id="1" kind="a"><name>First</name><date>2024-05-01T10:20:30Z</date><body>&lt;p&gt;Hello &lt;b&gt;world&lt;/b&gt;&lt;/p&gt;</body><price>10</price></item>
+  <item id="2" kind="b"><name>Second</name><date>2023-01-02T00:00:00Z</date><body>plain &amp;amp; text</body><price>n/a</price></item>
+  <item id="3" kind="a"><name>third</name><date>2025-12-31T23:59:59Z</date><body><![CDATA[<ul><li>x</li></ul>]]></body><price>2.5</price></item>
+  <n:extra>ns</n:extra>
+  <!-- comment -->
+  <?pi data?>
+</doc>

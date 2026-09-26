@@ -1,0 +1,98 @@
+{
+  "xml": "<doc><a>1</a></doc>",
+  "cases": [
+    {
+      "expr": "1 +"
+    },
+    {
+      "expr": "(1"
+    },
+    {
+      "expr": "doc["
+    },
+    {
+      "expr": "foo::bar"
+    },
+    {
+      "expr": "@"
+    },
+    {
+      "expr": "1 2"
+    },
+    {
+      "expr": "'unterminated"
+    },
+    {
+      "expr": "$"
+    },
+    {
+      "expr": "/doc/"
+    },
+    {
+      "expr": "doc//"
+    },
+    {
+      "expr": "unknown()"
+    },
+    {
+      "expr": "concat('a')"
+    },
+    {
+      "expr": "count(1)"
+    },
+    {
+      "expr": "string(1, 2)"
+    },
+    {
+      "expr": "not()"
+    },
+    {
+      "expr": "$undefined"
+    },
+    {
+      "expr": "p:x"
+    },
+    {
+      "expr": "1 | 2"
+    },
+    {
+      "expr": "/doc | 1"
+    },
+    {
+      "expr": "substring('a')"
+    },
+    {
+      "expr": "processing-instruction(1)"
+    },
+    {
+      "expr": "text(1)"
+    },
+    {
+      "expr": "sum(1)"
+    },
+    {
+      "expr": "id()"
+    },
+    {
+      "expr": "1 = = 2"
+    },
+    {
+      "expr": "//"
+    },
+    {
+      "expr": "..a"
+    },
+    {
+      "expr": "a b"
+    },
+    {
+      "expr": "/doc/a["
+    },
+    {
+      "expr": "doc/a]"
+    },
+    {
+      "expr": "'a' 'b'"
+    }
+  ]
+}

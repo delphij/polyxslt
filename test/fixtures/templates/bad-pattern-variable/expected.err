@@ -1,0 +1,5 @@
+exit 5
+error
+xsltCompileLocationPathPattern : Name expected
+compilation error: file test/fixtures/templates/bad-pattern-variable/style.xsl line 11 element template
+xsltCompilePattern : failed to compile '$x'

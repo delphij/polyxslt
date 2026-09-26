@@ -1,0 +1,7 @@
+exit 10
+runtime error: file test/fixtures/instructions/variable-out-of-scope/style.xsl line 11 element value-of
+Variable 'v' has not been declared.
+XPath error : Undefined variable: v
+runtime error: file test/fixtures/instructions/variable-out-of-scope/style.xsl line 11 element value-of
+XPath evaluation returned no result.
+no result for test/fixtures/instructions/variable-out-of-scope/in.xml

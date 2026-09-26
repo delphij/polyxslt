@@ -1,0 +1,4 @@
+exit 0
+compilation error: file test/fixtures/errors/unknown-instruction/style.xsl line 4 element no-such-instruction
+xsltStylePreCompute: unknown xsl:no-such-instruction
+xsltApplySequenceConstructor: no-such-instruction was not compiled

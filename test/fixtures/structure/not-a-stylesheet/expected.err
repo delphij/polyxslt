@@ -1,0 +1,3 @@
+exit 5
+compilation error: file test/fixtures/structure/not-a-stylesheet/style.xsl line 2 element doc
+xsltParseStylesheetProcess : document is not a stylesheet

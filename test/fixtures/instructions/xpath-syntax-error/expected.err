@@ -1,0 +1,4 @@
+exit 5
+XPath error : Invalid expression
+compilation error: file test/fixtures/instructions/xpath-syntax-error/style.xsl line 8 element value-of
+xsl:value-of : could not compile select expression '1 +'

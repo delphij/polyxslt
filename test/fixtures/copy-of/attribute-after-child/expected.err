@@ -1,0 +1,4 @@
+exit 9
+runtime error: file test/fixtures/copy-of/attribute-after-child/style.xsl line 7 element copy-of
+Attribute nodes must be added before any child nodes to an element.
+no result for test/fixtures/copy-of/attribute-after-child/in.xml

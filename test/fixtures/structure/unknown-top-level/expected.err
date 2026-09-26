@@ -1,0 +1,3 @@
+exit 5
+compilation error: file test/fixtures/structure/unknown-top-level/style.xsl line 4 element frobnicate
+xsltParseStylesheetTop: unknown frobnicate element

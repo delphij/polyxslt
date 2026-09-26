@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+release/
+*.tgz
+.DS_Store
+
+# Test output (Playwright, Vitest)
+test-results/
+playwright-report/
+blob-report/
+__screenshots__/
+.vitest/
+
+# Local-only verification samples; never commit these.
+.private/

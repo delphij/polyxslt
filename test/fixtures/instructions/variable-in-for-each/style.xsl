@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:n="urn:n" version="1.0">
+  <xsl:output method="html"/>
+  <xsl:template match="/">
+    <html>
+      <body>
+        <xsl:variable name="k" select="'a'"/>
+        <xsl:for-each select="doc/item[@kind = $k]">
+          <xsl:variable name="p" select="position()"/>
+          <p><xsl:value-of select="$p"/>:<xsl:value-of select="name"/></p>
+        </xsl:for-each>
+      </body>
+    </html>
+  </xsl:template>
+</xsl:stylesheet>
