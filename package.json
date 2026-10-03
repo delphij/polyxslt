@@ -65,17 +65,17 @@
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",
     "@playwright/test": "^1.63.0",
-    "@size-limit/file": "^14.0.0",
-    "@types/node": "^26.6.2",
-    "@vitest/browser-playwright": "^5.0.1",
+    "@size-limit/file": "^14.1.0",
+    "@types/node": "^26.6.3",
+    "@vitest/browser-playwright": "^5.0.2",
     "@vitest/coverage-istanbul": "^5.0.2",
     "esbuild": "^0.28.2",
     "fast-check": "^4.10.2",
     "playwright": "^1.63.0",
-    "size-limit": "^14.0.0",
+    "size-limit": "^14.1.0",
     "terser": "^5.51.2",
     "typescript": "^7.0.2",
-    "vitest": "^5.0.1"
+    "vitest": "^5.0.2"
   },
   "packageManager": "pnpm@12.6.0",
   "size-limit": [
