@@ -1,8 +1,8 @@
 // Turns the raw result tree into what a browser would have after parsing the serialized
 // output of libxslt (XSLT 1.0 §16): the html method's namespace and attribute handling, and
 // disable-output-escaping.
-import { clean } from './strict';
-import { htmlDocument, parseHtml } from './trust';
+import { clean } from './strict.js';
+import { htmlDocument, parseHtml } from './trust.js';
 
 export const XHTML_NS = 'http://www.w3.org/1999/xhtml';
 const SVG_NS = 'http://www.w3.org/2000/svg';

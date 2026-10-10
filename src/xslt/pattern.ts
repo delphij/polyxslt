@@ -3,10 +3,10 @@
 // A pattern is parsed as an XPath expression and restricted to unions of location paths
 // using the child and attribute axes and `//`.  Matching goes from the last step towards
 // the first, through parents and, for `//`, ancestors.
-import { Code, XSLTError } from '../errors';
-import { Axis, axis, parentOf } from '../xpath/axes';
-import { compile, compileTest, type Env, filter } from '../xpath/compile';
-import { type Ast, type NameTest, parse, type Resolver, type Step } from '../xpath/parse';
+import { Code, XSLTError } from '../errors.js';
+import { Axis, axis, parentOf } from '../xpath/axes.js';
+import { compile, compileTest, type Env, filter } from '../xpath/compile.js';
+import { type Ast, type NameTest, parse, type Resolver, type Step } from '../xpath/parse.js';
 
 export interface Alternative {
   m(n: Node, e: Env): boolean;

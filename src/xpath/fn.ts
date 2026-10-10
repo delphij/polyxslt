@@ -1,8 +1,8 @@
 // The XPath 1.0 core function library (XPath 1.0 §4).
-import { rootOf, sortUnique } from './axes';
-import type { Context, FnDef } from './compile';
-import { XML_NS } from './parse';
-import { type NodeSet, nodeSet, stringValue, toBool, toNum, toStr, type Value } from './value';
+import { rootOf, sortUnique } from './axes.js';
+import type { Context, FnDef } from './compile.js';
+import { XML_NS } from './parse.js';
+import { type NodeSet, nodeSet, stringValue, toBool, toNum, toStr, type Value } from './value.js';
 
 // The argument, or the context node as a node-set when the argument is omitted.
 const arg = (c: Context, a: Value[]): Value => a[0] ?? [c.n];

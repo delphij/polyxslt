@@ -30,7 +30,12 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/polyxslt.mjs"
     },
-    "./xslt-polyfill.min.js": "./dist/xslt-polyfill.min.js"
+    "./dev": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/dev/polyxslt.mjs"
+    },
+    "./xslt-polyfill.min.js": "./dist/xslt-polyfill.min.js",
+    "./dev/xslt-polyfill.js": "./dist/dev/xslt-polyfill.js"
   },
   "types": "./dist/index.d.ts",
   "unpkg": "./dist/xslt-polyfill.min.js",

@@ -3,8 +3,8 @@
 // XPath nodes are DOM nodes, except that a run of adjacent Text and CDATASection nodes is
 // one text node, represented by the first node of the run, and that document types are
 // not nodes at all.
-import { Code, XSLTError } from '../errors';
-import { isText } from './value';
+import { Code, XSLTError } from '../errors.js';
+import { isText } from './value.js';
 
 export enum Axis {
   Child,

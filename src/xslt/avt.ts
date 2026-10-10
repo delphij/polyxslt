@@ -1,8 +1,8 @@
 // Attribute value templates (XSLT 1.0 §7.6.2).
-import { Code, XSLTError } from '../errors';
-import { compileXPath, type Resolver } from '../xpath/index';
-import { toStr } from '../xpath/value';
-import { evaluate, type X } from './runtime';
+import { Code, XSLTError } from '../errors.js';
+import { compileXPath, type Resolver } from '../xpath/index.js';
+import { toStr } from '../xpath/value.js';
+import { evaluate, type X } from './runtime.js';
 
 export type Avt = (x: X) => string;
 

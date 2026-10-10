@@ -1,8 +1,8 @@
 // XPath 1.0 tokenizer and parser (XPath 1.0 §2, §3).  Operator-name and multiply-operator
 // disambiguation (§3.7) falls out of the parser: in operator position a name or `*` is an
 // operator, elsewhere it is a name test.
-import { Code, XSLTError } from '../errors';
-import { AXIS_NAMES, Axis } from './axes';
+import { Code, XSLTError } from '../errors.js';
+import { AXIS_NAMES, Axis } from './axes.js';
 
 export type NameTest = { ns?: string | null; local: string };
 export type TypeTest = { type: string; target?: string };

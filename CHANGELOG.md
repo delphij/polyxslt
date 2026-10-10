@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1
+
+- The type declarations use explicit file extensions in their imports, so they resolve
+  under TypeScript's `node16` and `nodenext` module resolution. Before, the types of the
+  stylesheet and of the options were lost there.
+- The development builds are exported as `polyxslt/dev` and `polyxslt/dev/xslt-polyfill.js`.
+
 ## 1.0.0
 
 First release. XSLT 1.0 and XPath 1.0 for the stylesheets used to present feeds and

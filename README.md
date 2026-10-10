@@ -6,6 +6,31 @@ sitemaps, not the complete language; see [docs/SUPPORTED.md](docs/SUPPORTED.md) 
 supported features, [docs/DIVERGENCES.md](docs/DIVERGENCES.md) for the known differences
 from libxslt, and [docs/ERRORS.md](docs/ERRORS.md) for the error codes.
 
+## Install
+
+The auto-mode build is a single file, `xslt-polyfill.min.js`. Take it from the
+[releases](https://github.com/delphij/polyxslt/releases) page or from the npm package
+(`dist/xslt-polyfill.min.js`) and serve it from the site that serves the documents, so that
+the feed does not depend on another host.
+
+The npm package is also available from the CDNs that mirror npm, for example
+`https://cdn.jsdelivr.net/npm/polyxslt@<version>/dist/xslt-polyfill.min.js`. Each release
+lists the Subresource Integrity hashes of its builds.
+
+For the ESM API:
+
+```sh
+npm install polyxslt
+```
+
+```js
+import { transform } from 'polyxslt';
+```
+
+`polyxslt/dev` exports the same API from the development build, whose errors carry a
+message and details in addition to the code; `polyxslt/dev/xslt-polyfill.js` is the
+development build of the auto mode.
+
 ## Use
 
 Add a script element in the XHTML namespace to the XML document, next to its

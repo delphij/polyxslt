@@ -1,8 +1,8 @@
-import { Code, XSLTError } from '../errors';
-import { defaultMethod, finish, type Method } from '../out/finish';
-import { newGeneration, rootOf } from '../xpath/axes';
-import { applyTemplates } from './compile';
-import type { Run, Stylesheet } from './runtime';
+import { Code, XSLTError } from '../errors.js';
+import { defaultMethod, finish, type Method } from '../out/finish.js';
+import { newGeneration, rootOf } from '../xpath/axes.js';
+import { applyTemplates } from './compile.js';
+import type { Run, Stylesheet } from './runtime.js';
 
 export interface Options {
   /** Remove active content from the result (see out/strict.ts). */

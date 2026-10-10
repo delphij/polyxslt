@@ -1,8 +1,8 @@
-import { Code, XSLTError } from './errors';
-import { install, XSLTProcessor } from './host/processor';
-import { compileStylesheet } from './xslt/compile';
-import type { Stylesheet } from './xslt/runtime';
-import { type Options, run } from './xslt/transform';
+import { Code, XSLTError } from './errors.js';
+import { install, XSLTProcessor } from './host/processor.js';
+import { compileStylesheet } from './xslt/compile.js';
+import type { Stylesheet } from './xslt/runtime.js';
+import { type Options, run } from './xslt/transform.js';
 
 export { Code, compileStylesheet, install, type Stylesheet, XSLTError, XSLTProcessor };
 

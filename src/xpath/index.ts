@@ -1,9 +1,9 @@
-import { newGeneration } from './axes';
-import type { Context, Env, Expr, FnDef } from './compile';
-import { compile } from './compile';
-import { coreFunctions } from './fn';
-import { parse, type Resolver } from './parse';
-import type { Value } from './value';
+import { newGeneration } from './axes.js';
+import type { Context, Env, Expr, FnDef } from './compile.js';
+import { compile } from './compile.js';
+import { coreFunctions } from './fn.js';
+import { parse, type Resolver } from './parse.js';
+import type { Value } from './value.js';
 
 export type { Context, Env, Expr, FnDef, Resolver, Value };
 export { coreFunctions };

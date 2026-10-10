@@ -1,8 +1,8 @@
 // Run-time state of a transformation, variable scopes and XPath evaluation in XSLT.
-import { Code, XSLTError } from '../errors';
-import type { Env, Expr, FnDef } from '../xpath/compile';
-import { coreFunctions } from '../xpath/fn';
-import type { Value } from '../xpath/value';
+import { Code, XSLTError } from '../errors.js';
+import type { Env, Expr, FnDef } from '../xpath/compile.js';
+import { coreFunctions } from '../xpath/fn.js';
+import type { Value } from '../xpath/value.js';
 
 export const XSL_NS = 'http://www.w3.org/1999/XSL/Transform';
 

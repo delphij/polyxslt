@@ -2,6 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "noEmit": false,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "emitDeclarationOnly": true,
     "rootDir": "src",
     "outDir": "dist",

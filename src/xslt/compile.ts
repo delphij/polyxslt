@@ -1,9 +1,9 @@
 // Compiles a stylesheet document into rules and instruction closures (XSLT 1.0 §2–§11).
-import { Code, XSLTError } from '../errors';
-import { Axis, axis } from '../xpath/axes';
-import type { Env, Expr } from '../xpath/compile';
-import { compileXPath, type Resolver } from '../xpath/index';
-import { XML_NS } from '../xpath/parse';
+import { Code, XSLTError } from '../errors.js';
+import { Axis, axis } from '../xpath/axes.js';
+import type { Env, Expr } from '../xpath/compile.js';
+import { compileXPath, type Resolver } from '../xpath/index.js';
+import { XML_NS } from '../xpath/parse.js';
 import {
   fragments,
   type NodeSet,
@@ -13,9 +13,9 @@ import {
   toNum,
   toStr,
   type Value,
-} from '../xpath/value';
-import { type Avt, avt } from './avt';
-import { compilePattern } from './pattern';
+} from '../xpath/value.js';
+import { type Avt, avt } from './avt.js';
+import { compilePattern } from './pattern.js';
 import {
   type Body,
   env,
@@ -28,7 +28,7 @@ import {
   seq,
   type X,
   XSL_NS,
-} from './runtime';
+} from './runtime.js';
 
 const XMLNS_NS = 'http://www.w3.org/2000/xmlns/';
 

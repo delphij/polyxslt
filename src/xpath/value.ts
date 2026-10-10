@@ -1,6 +1,6 @@
 // XPath values and the conversions between them (XPath 1.0 §4).  Where libxslt departs
 // from the specification, its behavior is followed; see docs/DIVERGENCES.md.
-import { Code, XSLTError } from '../errors';
+import { Code, XSLTError } from '../errors.js';
 
 /** A node-set, always in document order without duplicates. */
 export type NodeSet = Node[];

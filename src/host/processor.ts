@@ -1,8 +1,8 @@
 // An XSLTProcessor with the interface browsers provide, for browsers that no longer do.
-import { XHTML_NS } from '../out/finish';
-import { compileStylesheet } from '../xslt/compile';
-import type { Stylesheet } from '../xslt/runtime';
-import { run } from '../xslt/transform';
+import { XHTML_NS } from '../out/finish.js';
+import { compileStylesheet } from '../xslt/compile.js';
+import type { Stylesheet } from '../xslt/runtime.js';
+import { run } from '../xslt/transform.js';
 
 export class XSLTProcessor {
   #sheet: Stylesheet | undefined;

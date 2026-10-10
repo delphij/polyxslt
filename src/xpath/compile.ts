@@ -1,8 +1,8 @@
 // Compiles an XPath AST into closures.
-import { Code, XSLTError } from '../errors';
-import { Axis, axis, isReverse, rootOf, sortUnique, type Test } from './axes';
-import type { Ast, NodeTest, Step } from './parse';
-import { isText, type NodeSet, pathSet, stringValue, toBool, toNum, type Value } from './value';
+import { Code, XSLTError } from '../errors.js';
+import { Axis, axis, isReverse, rootOf, sortUnique, type Test } from './axes.js';
+import type { Ast, NodeTest, Step } from './parse.js';
+import { isText, type NodeSet, pathSet, stringValue, toBool, toNum, type Value } from './value.js';
 
 export type Fn = (c: Context, args: Value[]) => Value;
 /** A function: minimum and maximum number of arguments, and the implementation. */

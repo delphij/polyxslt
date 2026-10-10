@@ -4,11 +4,11 @@
 // data-stylesheet attribute of the script element, or the xml-stylesheet processing
 // instruction), transforms the document, replaces its content with the result, and runs
 // the scripts in the result in document order.
-import { XHTML_NS } from '../out/finish';
-import { parseHtml } from '../out/trust';
-import { compileStylesheet } from '../xslt/compile';
-import { run } from '../xslt/transform';
-import { install } from './processor';
+import { XHTML_NS } from '../out/finish.js';
+import { parseHtml } from '../out/trust.js';
+import { compileStylesheet } from '../xslt/compile.js';
+import { run } from '../xslt/transform.js';
+import { install } from './processor.js';
 
 const XSL_TYPES = ['text/xsl', 'application/xslt+xml', 'text/xml', 'application/xml'];
 const INERT = 'text/x-polyxslt-inert';
