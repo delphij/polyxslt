@@ -2,10 +2,16 @@ name: Release
 
 # Pushing a tag v<version> publishes a GitHub release with the files of `pnpm release`, and
 # the package on npm; see docs/RELEASING.md. The tag must match the version in package.json.
+#
+# Run by hand (workflow_dispatch) on a branch, it is a rehearsal: it builds the release
+# files and the npm package of that commit and keeps them as artifacts of the run, and
+# publishes nothing. A release tag cannot be moved once pushed, so rehearse first after
+# changing this file.
 
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -31,9 +37,24 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck
+      - name: Cache Playwright browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+      - run: pnpm exec playwright install --with-deps chromium firefox webkit
       - run: pnpm test
-      - run: pnpm release
+      - run: pnpm release ${{ github.ref_type != 'tag' && '--snapshot' || '' }}
+      - name: Keep the release files of a rehearsal
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-files
+          path: release/
+          if-no-files-found: error
+          retention-days: 7
       - name: Publish the release
+        if: github.ref_type == 'tag'
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
@@ -47,7 +68,10 @@ jobs:
             xslt-polyfill.min.js xslt-polyfill.min.js.map polyxslt.mjs polyxslt.mjs.map \
             "polyxslt-$version.tar.xz" SHA256SUMS SRI.txt
       # dist/ is the build that `pnpm release` has just made.
-      - run: npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP/npm"
+      - name: Build the npm package
+        run: |
+          mkdir "$RUNNER_TEMP/npm"
+          npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP/npm"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: npm-package
@@ -61,6 +85,7 @@ jobs:
   # file made above as it is. The `npm` environment can require an approval.
   npm:
     needs: release
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: npm

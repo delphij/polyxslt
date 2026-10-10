@@ -45,7 +45,13 @@
    (.github/workflows/release.yml) runs the lint, type check and unit tests, runs
    `pnpm release`, and creates the GitHub release with the files above and `NOTES.md` as
    its notes; a version with a hyphen, such as `1.1.0-rc.1`, is marked as a pre-release.
-   The browser tests are not run again; they have run in CI on the tagged commit.
+   The end-to-end tests are not run again; they have run in CI on the tagged commit.
+
+   The tag rules of the repository do not allow a `v*` tag to be moved or deleted, and a
+   failed run cannot be repaired at the same tag. After a change to the workflow, rehearse
+   before tagging: run it by hand on the branch (`gh workflow run release.yml --ref main`).
+   The rehearsal builds the release files and the npm package of that commit, keeps them
+   as artifacts of the run, and publishes nothing.
 6. The workflow's `npm` job then publishes the package, built by the release job, on npm.
    If the `npm` environment requires an approval, the job waits for it. A version with a
    hyphen gets the dist-tag `next` instead of `latest`. A version that is already on npm is
