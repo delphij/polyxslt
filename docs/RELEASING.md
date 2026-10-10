@@ -10,8 +10,13 @@
    POLYXSLT_PRIVATE=<dir> pnpm verify:private
    ```
 
-3. For npm, `npm publish` runs `prepublishOnly`: lint, type check, build, size check, and
-   the checks that the reference output and the generated documents are current.
+3. Run the checks that `npm publish` would run from a workstation (`prepublishOnly`): lint,
+   type check, build, size check, and that the reference output and the generated
+   documents are current:
+
+   ```sh
+   pnpm run prepublishOnly
+   ```
 4. Commit, tag and build the release files:
 
    ```sh
@@ -41,9 +46,26 @@
    `pnpm release`, and creates the GitHub release with the files above and `NOTES.md` as
    its notes; a version with a hyphen, such as `1.1.0-rc.1`, is marked as a pre-release.
    The browser tests are not run again; they have run in CI on the tagged commit.
-   If the package is also on npm, add the jsDelivr URL of the auto-mode build to the
-   notes, for example `https://cdn.jsdelivr.net/npm/polyxslt@1.0.0/dist/xslt-polyfill.min.js`.
+6. The workflow's `npm` job then publishes the package, built by the release job, on npm.
+   If the `npm` environment requires an approval, the job waits for it. A version with a
+   hyphen gets the dist-tag `next` instead of `latest`. A version that is already on npm is
+   left as it is, so the job can be run again.
 
-npm provenance statements can only be produced by a supported CI system (GitHub Actions or
-GitLab CI/CD) building from a public repository; a package published from a workstation or
-another server has none.
+## npm setup
+
+The workflow publishes with npm's trusted publishing: the registry accepts the OIDC token
+that GitHub issues to the `npm` job, and the repository holds no npm token. The package
+gets a provenance statement, which only a supported CI system building from a public
+repository can produce; a version published from a workstation has none.
+
+The setup is done once:
+
+- On npmjs.com, in the settings of the package, add a trusted publisher: GitHub Actions,
+  user `delphij`, repository `polyxslt`, workflow `release.yml`, environment `npm`. Then
+  set the publishing access to require two-factor authentication and disallow tokens.
+- On GitHub, in the settings of the repository, create the environment `npm`, limit its
+  deployment tags to `v*`, and add a required reviewer if a release should wait for an
+  approval.
+
+npm accepts a trusted publisher only for a package that exists, so the first version was
+published by hand, with `npm publish` at the release tag.

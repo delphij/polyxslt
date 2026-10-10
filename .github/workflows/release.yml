@@ -1,7 +1,7 @@
 name: Release
 
-# Pushing a tag v<version> publishes a GitHub release with the files of `pnpm release`;
-# see docs/RELEASING.md. The tag must match the version in package.json.
+# Pushing a tag v<version> publishes a GitHub release with the files of `pnpm release`, and
+# the package on npm; see docs/RELEASING.md. The tag must match the version in package.json.
 
 on:
   push:
@@ -46,3 +46,43 @@ jobs:
             --repo "$GITHUB_REPOSITORY" --title "polyxslt $version" --notes-file NOTES.md \
             xslt-polyfill.min.js xslt-polyfill.min.js.map polyxslt.mjs polyxslt.mjs.map \
             "polyxslt-$version.tar.xz" SHA256SUMS SRI.txt
+      # dist/ is the build that `pnpm release` has just made.
+      - run: npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP/npm"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: npm-package
+          path: ${{ runner.temp }}/npm/*.tgz
+          if-no-files-found: error
+          retention-days: 7
+
+  # npm trusted publishing: the registry accepts the OIDC token of this job, so the
+  # repository holds no npm credential. The job is the only one that can request the token;
+  # it does not check out the repository or install dependencies, and publishes the package
+  # file made above as it is. The `npm` environment can require an approval.
+  npm:
+    needs: release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: npm
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: npm-package
+      - name: Publish to npm
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="${TAG#v}"
+          if [ -n "$(npm view "polyxslt@$version" version 2>/dev/null)" ]; then
+            echo "polyxslt $version is already on npm"
+            exit 0
+          fi
+          disttag=latest
+          case "$version" in *-*) disttag=next ;; esac
+          npm publish "polyxslt-$version.tgz" --ignore-scripts --tag "$disttag"
