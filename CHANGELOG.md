@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2
+
+No changes to the code. This is the first version published by the release workflow, so
+the npm package has a provenance statement. 1.0.1 is on npm only, published by hand; its
+source is the tag `v1.0.1`.
+
 ## 1.0.1
 
 - The type declarations use explicit file extensions in their imports, so they resolve
