@@ -1,6 +1,6 @@
 {
   "name": "polyxslt",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A small XSLT 1.0 polyfill for browsers without native XSLT",
   "keywords": [
     "xslt",
