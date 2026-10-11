@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.0
 
 Faster transformations; `pnpm bench` measures them (see CONTRIBUTING.md). With the
 benchmark's feed and sitemap stylesheets a transformation takes 35 to 55 % less time than
