@@ -9,7 +9,8 @@
 // the same serialized result with every build.
 //
 // The workloads are the stylesheets under test/fixtures/requirements applied to generated
-// documents, and bench/stress.xsl, which exercises XPath evaluation rather than output.
+// documents, bench/stress.xsl, which exercises XPath evaluation rather than output, and
+// bench/order.xsl and bench/order-flat.xsl, which sort large node-sets into document order.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { chromium, firefox, webkit } from 'playwright';
 
@@ -120,6 +121,8 @@ const workloads = [
   { name: 'atom', xsl: fixture('feed-atom'), xml: atom(300) },
   { name: 'sitemap', xsl: fixture('sitemap'), xml: sitemap(1500) },
   { name: 'stress', xsl: readFileSync('bench/stress.xsl', 'utf8'), xml: catalog(30, 40) },
+  { name: 'order', xsl: readFileSync('bench/order.xsl', 'utf8'), xml: catalog(30, 40) },
+  { name: 'order-flat', xsl: readFileSync('bench/order-flat.xsl', 'utf8'), xml: sitemap(1500) },
 ].filter((w) => !only || only.split(',').includes(w.name));
 
 // --- Measurement, in the page ------------------------------------------------------------

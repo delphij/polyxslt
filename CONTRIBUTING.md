@@ -85,7 +85,8 @@ Where the implementation deliberately differs from libxslt, record the differenc
 
 `pnpm bench` measures the production ESM bundle in the three browsers: compiling the
 stylesheets under `test/fixtures/requirements` and applying them to generated documents,
-and `bench/stress.xsl`, which exercises XPath evaluation and patterns rather than output.
+`bench/stress.xsl`, which exercises XPath evaluation and patterns rather than output, and
+`bench/order.xsl` and `bench/order-flat.xsl`, which sort large node-sets into document order.
 Given several bundles, it reports the others relative to the first and checks that all
 give the same result:
 
