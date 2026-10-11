@@ -9,6 +9,8 @@
         <h:div Class="x"><Span NOWRAP="1">plain in xhtml</Span><h:a HREF="/a b">prefixed</h:a></h:div>
         <xsl:element name="SECTION"><xsl:attribute name="Lang">en</xsl:attribute><i>computed</i></xsl:element>
         <xsl:element name="{name(doc/item[1])}" namespace="urn:n"><u>computed namespaced</u></xsl:element>
+        <a xmlns="urn:d" href="/a b" title="default namespace"><i>literal</i></a>
+        <xsl:element name="a" namespace="urn:n"><xsl:attribute name="href">/c d</xsl:attribute><i>computed, no prefix</i></xsl:element>
         <xsl:copy-of select="$tree"/>
         <xsl:copy-of select="doc/title"/>
         <xsl:copy-of select="doc/n:extra"/>
