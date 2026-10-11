@@ -51,11 +51,11 @@ export function compileTest(a: Axis, t: NodeTest): Test {
 }
 
 /** Appends the nodes on an axis from `n` that pass a node test, in axis order. */
-export type Walk = (n: Node, out: Node[]) => void;
+type Walk = (n: Node, out: Node[]) => void;
 
 // A name test on the attribute or child axis is by far the most common step; the DOM finds
 // an attribute by name, and the element children without the text nodes between them.
-export function compileAxis(a: Axis, t: NodeTest): Walk {
+function compileAxis(a: Axis, t: NodeTest): Walk {
   const test = compileTest(a, t);
   if ('local' in t) {
     const { ns, local } = t;
@@ -241,15 +241,16 @@ export function compile(ast: Ast): Expr {
     case 'path': {
       const steps = simplify(ast.steps);
       const fns = steps.map(compileStep);
+      const keeps = steps.map((s) => keepsLevel(s.axis));
       const start = ast.start && compile(ast.start);
       const root = ast.root;
       return (c) => {
         let ns: NodeSet = start ? pathSet(start(c)) : [root ? rootOf(c.n) : c.n];
         let level = false;
-        for (const [i, f] of fns.entries()) {
+        for (let i = 0; i < fns.length; i++) {
           level ||= ns.length < 2;
-          ns = f(ns, c.e, level);
-          level &&= keepsLevel((steps[i] as Step).axis);
+          ns = (fns[i] as StepFn)(ns, c.e, level);
+          level &&= keeps[i] as boolean;
         }
         return ns;
       };

@@ -49,6 +49,7 @@ function alternative(ast: Ast, src: string): Alternative {
     const test = tests[i] as (n: Node) => boolean;
     if (!test(n)) return false;
     const ps = preds[i] ?? [];
+    if (!ps.length) return true;
     // Predicates that neither read the position or size nor give a number hold for a node
     // whatever its siblings are, and are evaluated for n alone.  Whether they read them
     // is found out by evaluating them.

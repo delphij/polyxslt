@@ -1,7 +1,7 @@
 // Compiles a stylesheet document into rules and instruction closures (XSLT 1.0 §2–§11).
 import { Code, XSLTError } from '../errors.js';
 import { createElement, setAttribute } from '../out/finish.js';
-import { Axis, axis } from '../xpath/axes.js';
+import { Axis, axis, XMLNS } from '../xpath/axes.js';
 import type { Expr } from '../xpath/compile.js';
 import { compileXPath, type Resolver } from '../xpath/index.js';
 import { expand, expandedName, XML_NS } from '../xpath/parse.js';
@@ -29,8 +29,6 @@ import {
   X,
   XSL_NS,
 } from './runtime.js';
-
-const XMLNS_NS = 'http://www.w3.org/2000/xmlns/';
 
 type InstrCompiler = (el: Element) => Instr;
 
@@ -129,7 +127,7 @@ function literal(el: Element): Instr {
   const name = el.nodeName;
   const attrs: [string | null, string, Avt][] = [];
   for (const a of el.attributes) {
-    if (a.namespaceURI === XMLNS_NS) continue;
+    if (a.namespaceURI === XMLNS) continue;
     if (a.namespaceURI === XSL_NS) {
       if (a.localName === 'use-attribute-sets') throw new XSLTError(Code.Unsupported, a.name);
       continue;
@@ -404,26 +402,24 @@ instructions.set('element', (el) => {
   if (el.hasAttributeNS(null, 'use-attribute-sets'))
     throw new XSLTError(Code.Unsupported, 'use-attribute-sets');
   const [name, ns] = nameAvts(el);
+  const resolve = resolver(el);
+  const dflt = el.lookupNamespaceURI(null);
   const b = body(el);
   return (x, out) => {
     const n = name(x);
-    const e = element(
-      x,
-      out,
-      ns ? ns(x) || null : expand(n, resolver(el), el.lookupNamespaceURI(null))[0],
-      n,
-    );
+    const e = element(x, out, ns ? ns(x) || null : expand(n, resolve, dflt)[0], n);
     b(x, e);
   };
 });
 
 instructions.set('attribute', (el) => {
   const [name, ns] = nameAvts(el);
+  const resolve = resolver(el);
   const b = body(el);
   return (x, out) => {
     const n = name(x);
     if (n === 'xmlns' || n.startsWith('xmlns:')) throw new XSLTError(Code.BadName, n);
-    const uri = ns ? ns(x) || null : expand(n, resolver(el))[0];
+    const uri = ns ? ns(x) || null : expand(n, resolve)[0];
     const value = fragment(b, x).textContent ?? '';
     if (out.nodeType !== 1) return;
     if (out.hasChildNodes()) throw new XSLTError(Code.AttributeAfterChildren, n);
