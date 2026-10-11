@@ -1,5 +1,5 @@
 import { Code, XSLTError } from '../errors.js';
-import { defaultMethod, finish, type Method } from '../out/finish.js';
+import { finish, type Method } from '../out/finish.js';
 import { newGeneration, rootOf } from '../xpath/axes.js';
 import { applyTemplates } from './compile.js';
 import type { Run, Stylesheet } from './runtime.js';
@@ -19,9 +19,15 @@ export interface Result {
 /** Applies a compiled stylesheet to `source`; result nodes are owned by `out`. */
 export function run(s: Stylesheet, source: Node, out: Document, opts: Options = {}): Result {
   newGeneration();
+  const f = out.createDocumentFragment();
+  const m = s.output.method as Method | undefined;
   const r: Run = {
     s,
     out,
+    f,
+    m,
+    h: m === 'html' ? new Map([[f, false]]) : undefined,
+    redo: false,
     root: rootOf(source),
     g: new Map(),
     d: 0,
@@ -29,7 +35,6 @@ export function run(s: Stylesheet, source: Node, out: Document, opts: Options = 
     count: 0,
     max: opts.maxNodes ?? Number.POSITIVE_INFINITY,
   };
-  const f = out.createDocumentFragment();
   try {
     applyTemplates([source], { n: source, p: 1, s: 1, v: null, r }, f);
   } catch (e) {
@@ -40,7 +45,7 @@ export function run(s: Stylesheet, source: Node, out: Document, opts: Options = 
     }
     throw e;
   }
-  const method = (s.output.method as Method | undefined) ?? defaultMethod(f);
-  const fragment = finish(f, { ...s.output, method, strict: !!opts.strict }, r.doe, out);
+  const method = r.m ?? 'xml';
+  const fragment = finish(r, { ...s.output, method, strict: !!opts.strict });
   return { fragment, method };
 }

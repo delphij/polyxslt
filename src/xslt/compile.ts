@@ -1,5 +1,6 @@
 // Compiles a stylesheet document into rules and instruction closures (XSLT 1.0 §2–§11).
 import { Code, XSLTError } from '../errors.js';
+import { createElement, setAttribute } from '../out/finish.js';
 import { Axis, axis } from '../xpath/axes.js';
 import type { Env, Expr } from '../xpath/compile.js';
 import { compileXPath, type Resolver } from '../xpath/index.js';
@@ -155,7 +156,7 @@ function element(x: X, out: Node, ns: string | null, name: string): Element {
   count(x.r);
   let e: Element;
   try {
-    e = x.r.out.createElementNS(ns, name);
+    e = createElement(x.r, out, ns, name);
   } catch {
     throw new XSLTError(Code.BadName, name);
   }
@@ -178,7 +179,7 @@ function literal(el: Element): Instr {
   const b = body(el);
   return (x, out) => {
     const e = element(x, out, ns, name);
-    for (const [ans, an, v] of attrs) e.setAttributeNS(ans, an, v(x));
+    for (const [ans, an, v] of attrs) setAttribute(x.r, e, ans, an, v(x));
     b(x, e);
     return undefined;
   };
@@ -374,7 +375,7 @@ function copyNode(n: Node, x: X, out: Node): void {
         e.namespaceURI,
         e.prefix ? `${e.prefix}:${e.localName}` : e.localName,
       );
-      for (const a of e.attributes) copy.setAttributeNS(a.namespaceURI, a.name, a.value);
+      for (const a of e.attributes) setAttribute(x.r, copy, a.namespaceURI, a.name, a.value);
       copyChildren(e, x, copy);
       return;
     }
@@ -382,7 +383,7 @@ function copyNode(n: Node, x: X, out: Node): void {
       const a = n as Attr;
       if (out.nodeType !== 1) return;
       if (out.hasChildNodes()) throw new XSLTError(Code.AttributeAfterChildren, a.name);
-      (out as Element).setAttributeNS(a.namespaceURI, a.name, a.value);
+      setAttribute(x.r, out as Element, a.namespaceURI, a.name, a.value);
       return;
     }
     case 3:
@@ -474,7 +475,7 @@ instructions.set('attribute', (el) => {
     if (out.nodeType !== 1) return undefined;
     if (out.hasChildNodes()) throw new XSLTError(Code.AttributeAfterChildren, n);
     try {
-      (out as Element).setAttributeNS(uri, n, value);
+      setAttribute(x.r, out as Element, uri, n, value);
     } catch {
       throw new XSLTError(Code.BadName, n);
     }

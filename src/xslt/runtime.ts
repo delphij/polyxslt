@@ -1,5 +1,6 @@
 // Run-time state of a transformation, variable scopes and XPath evaluation in XSLT.
 import { Code, XSLTError } from '../errors.js';
+import type { Tree } from '../out/finish.js';
 import type { Env, Expr, FnDef } from '../xpath/compile.js';
 import { coreFunctions } from '../xpath/fn.js';
 import type { Value } from '../xpath/value.js';
@@ -33,18 +34,14 @@ export interface Stylesheet {
   output: { method?: string; encoding?: string };
 }
 
-export interface Run {
+export interface Run extends Tree {
   s: Stylesheet;
-  /** Document that owns the result nodes. */
-  out: Document;
   /** Root of the source tree, the context of global variables. */
   root: Node;
   /** Values of global variables; PENDING while one is being computed. */
   g: Map<string, Value | typeof PENDING>;
   /** Current template nesting depth. */
   d: number;
-  /** Text nodes written with disable-output-escaping. */
-  doe: Set<Text>;
   /** Result nodes created so far, and the limit. */
   count: number;
   max: number;

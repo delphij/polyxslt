@@ -16,7 +16,7 @@ const common = {
   minify: !dev,
   // Property names used only internally, which can be shortened.
   mangleProps:
-    /^(axis|preds|steps|start|root|doe|up|output|other|globals|byName|sel|order|desc|num|cmp|args|key|pr|op)$/,
+    /^(axis|preds|steps|start|root|doe|up|output|other|globals|byName|sel|order|desc|num|cmp|args|key|pr|op|redo)$/,
   define: { __DEV__: String(dev) },
   banner: { js: `/*! polyxslt ${version} | MIT License */` },
   legalComments: 'none',
