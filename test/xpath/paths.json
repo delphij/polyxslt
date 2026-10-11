@@ -327,6 +327,98 @@
     {
       "expr": "//*[@n][2]",
       "nodes": true
+    },
+    {
+      "expr": "//sec/@a:k",
+      "nodes": true
+    },
+    {
+      "expr": "//sec/@a:*",
+      "nodes": true
+    },
+    {
+      "expr": "//sec/@k",
+      "nodes": true
+    },
+    {
+      "expr": "//sec/@n",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/@a",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/@xmlns",
+      "nodes": true
+    },
+    {
+      "expr": "//sec/@xml:id",
+      "nodes": true
+    },
+    {
+      "expr": "//@n/p",
+      "nodes": true
+    },
+    {
+      "expr": "//text()/p",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/comment()/sec",
+      "nodes": true
+    },
+    {
+      "expr": "/*/*/*",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec/a:*",
+      "nodes": true
+    },
+    {
+      "expr": "//sec/*",
+      "nodes": true
+    },
+    {
+      "expr": "//q/*",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec/p/b",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/missing | /doc/sec",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec | /doc/missing",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/missing | /doc/none",
+      "nodes": true
+    },
+    {
+      "expr": "(/doc/missing | //p)[2]",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec/p | /doc/sec/@n | /doc/empty",
+      "nodes": true
+    },
+    {
+      "expr": "//sec[@n = 2]/@*",
+      "nodes": true
+    },
+    {
+      "expr": "//p/@class/../b",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec[@a:k]/p[@class]/@class",
+      "nodes": true
     }
   ]
 }

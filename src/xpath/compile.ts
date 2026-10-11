@@ -1,6 +1,6 @@
 // Compiles an XPath AST into closures.
 import { Code, XSLTError } from '../errors.js';
-import { Axis, axis, isReverse, rootOf, sortUnique, type Test } from './axes.js';
+import { Axis, axis, isReverse, rootOf, sortUnique, type Test, XMLNS } from './axes.js';
 import type { Ast, NodeTest, Step } from './parse.js';
 import { isText, type NodeSet, pathSet, stringValue, toBool, toNum, type Value } from './value.js';
 
@@ -50,6 +50,32 @@ export function compileTest(a: Axis, t: NodeTest): Test {
     n.nodeType === type && (n as Element).localName === local && (n as Element).namespaceURI === ns;
 }
 
+/** Appends the nodes on an axis from `n` that pass a node test, in axis order. */
+export type Walk = (n: Node, out: Node[]) => void;
+
+// A name test on the attribute or child axis is by far the most common step; the DOM finds
+// an attribute by name, and the element children without the text nodes between them.
+export function compileAxis(a: Axis, t: NodeTest): Walk {
+  const test = compileTest(a, t);
+  if ('local' in t) {
+    const { ns, local } = t;
+    if (a === Axis.Attribute && local !== '*' && ns !== XMLNS) {
+      return (n, out) => {
+        const at = n.nodeType === 1 && (n as Element).getAttributeNodeNS(ns ?? null, local);
+        if (at) out.push(at);
+      };
+    }
+    if (a === Axis.Child) {
+      return (n, out) => {
+        for (let c = (n as Element).firstElementChild; c; c = c.nextElementSibling) {
+          if (test(c)) out.push(c);
+        }
+      };
+    }
+  }
+  return (n, out) => axis(a, n, test, out);
+}
+
 export function filter(nodes: NodeSet, pred: Expr, e: Env): NodeSet {
   const s = nodes.length;
   return nodes.filter((n, i) => {
@@ -61,14 +87,14 @@ export function filter(nodes: NodeSet, pred: Expr, e: Env): NodeSet {
 type StepFn = (nodes: NodeSet, e: Env) => NodeSet;
 
 function compileStep(st: Step): StepFn {
-  const test = compileTest(st.axis, st.test);
+  const walk = compileAxis(st.axis, st.test);
   const preds = st.preds.map(compile);
   const reverse = isReverse(st.axis);
   return (nodes, e) => {
     const out: Node[] = [];
     for (const n of nodes) {
       let r: Node[] = [];
-      axis(st.axis, n, test, r);
+      walk(n, r);
       for (const p of preds) r = filter(r, p, e);
       if (nodes.length === 1) return reverse ? r.reverse() : r;
       for (const x of r) out.push(x);
@@ -189,7 +215,13 @@ export function compile(ast: Ast): Expr {
       const op = ast.op;
       if (op === 'or') return (c) => toBool(l(c)) || toBool(r(c));
       if (op === 'and') return (c) => toBool(l(c)) && toBool(r(c));
-      if (op === '|') return (c) => sortUnique([...pathSet(l(c)), ...pathSet(r(c))]);
+      if (op === '|') {
+        return (c) => {
+          const a = pathSet(l(c));
+          const b = pathSet(r(c));
+          return !a.length ? b : !b.length ? a : sortUnique([...a, ...b]);
+        };
+      }
       const f = ARITHMETIC[op];
       if (f) return (c) => f(toNum(l(c)), toNum(r(c)));
       return (c) => compare(op, l(c), r(c));

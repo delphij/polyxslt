@@ -49,7 +49,7 @@ export function isReverse(a: Axis): boolean {
 
 export type Test = (n: Node) => boolean;
 
-const XMLNS = 'http://www.w3.org/2000/xmlns/';
+export const XMLNS = 'http://www.w3.org/2000/xmlns/';
 
 function isNode(n: Node): boolean {
   return n.nodeType !== 10 && !(isText(n) && isText(n.previousSibling));
