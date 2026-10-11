@@ -7,6 +7,7 @@ import { Code, XSLTError } from '../errors.js';
 import { Axis, axis, parentOf } from '../xpath/axes.js';
 import { compile, compileTest, type Env, filter } from '../xpath/compile.js';
 import { type Ast, type NameTest, parse, type Resolver, type Step } from '../xpath/parse.js';
+import { toBool } from '../xpath/value.js';
 
 export interface Alternative {
   m(n: Node, e: Env): boolean;
@@ -34,6 +35,9 @@ function alternative(ast: Ast, src: string): Alternative {
   const tests = steps.map((s) => compileTest(s.axis, s.test));
   const preds = steps.map((s) => s.preds.map(compile));
 
+  // Steps with a predicate that turned out to depend on the context position or size.
+  const positional: boolean[] = [];
+
   // Whether n matches steps[i], including its predicates.
   const step = (n: Node, i: number, e: Env): boolean => {
     const s = steps[i] as Step;
@@ -41,7 +45,30 @@ function alternative(ast: Ast, src: string): Alternative {
     const test = tests[i] as (n: Node) => boolean;
     if (!test(n)) return false;
     const ps = preds[i] ?? [];
-    if (!ps.length) return true;
+    // Predicates that neither read the position or size nor give a number hold for a node
+    // whatever its siblings are, and are evaluated for n alone.  Whether they read them
+    // is found out by evaluating them.
+    if (!positional[i]) {
+      const c = {
+        n,
+        e,
+        get p() {
+          positional[i] = true;
+          return 1;
+        },
+        get s() {
+          positional[i] = true;
+          return 1;
+        },
+      };
+      for (const p of ps) {
+        const v = p(c);
+        if (typeof v === 'number') positional[i] = true;
+        if (positional[i]) break;
+        if (!toBool(v)) return false;
+      }
+      if (!positional[i]) return true;
+    }
     let set: Node[] = [];
     axis(s.axis, parentOf(n) as Node, test, set);
     for (const p of ps) set = filter(set, p, e);
