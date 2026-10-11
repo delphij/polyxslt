@@ -28,12 +28,15 @@ export function htmlDocument(): Document {
   return htmlDoc;
 }
 
+let template: HTMLTemplateElement | undefined;
+
 /**
  * Parses HTML as template content, so that no element is moved into <head> and table parts
- * are kept, and imports the result into `doc`.  Scripts in it are not run.
+ * are kept.  Scripts in it are not run.  The nodes belong to the inert document until the
+ * fragment is inserted somewhere, and the fragment is used again by the next call.
  */
-export function parseHtml(s: unknown, doc: Document, fromStylesheet: boolean): DocumentFragment {
-  const t = htmlDocument().createElement('template');
-  t.innerHTML = fromStylesheet ? trusted(s as string) : (s as string);
-  return doc.importNode(t.content, true);
+export function parseHtml(s: unknown, fromStylesheet: boolean): DocumentFragment {
+  template ??= htmlDocument().createElement('template');
+  template.innerHTML = fromStylesheet ? trusted(s as string) : (s as string);
+  return template.content;
 }

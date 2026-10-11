@@ -44,7 +44,7 @@ function patchDocument(): void {
       ...inner,
       set(this: Element, v: unknown) {
         if (this.ownerDocument === document && this.namespaceURI === XHTML_NS) {
-          this.replaceChildren(parseHtml(v, document, false));
+          this.replaceChildren(parseHtml(v, false));
         } else {
           set.call(this, v);
         }
@@ -58,7 +58,7 @@ function patchDocument(): void {
     text: string,
   ) {
     if (this.ownerDocument === document && this.namespaceURI === XHTML_NS) {
-      const frag = parseHtml(text, document, false);
+      const frag = parseHtml(text, false);
       const p = pos.toLowerCase();
       if (p === 'beforeend') this.append(frag);
       else if (p === 'afterbegin') this.prepend(frag);

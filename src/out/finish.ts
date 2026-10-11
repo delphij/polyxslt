@@ -293,7 +293,7 @@ export function finish(t: Tree, out: Output): DocumentFragment {
   }
   for (const text of t.doe) {
     if (!f.contains(text)) continue;
-    const parsed = method === 'html' ? parseHtml(text.data, doc, true) : parseXml(text.data, doc);
+    const parsed = method === 'html' ? parseHtml(text.data, true) : parseXml(text.data, doc);
     if (parsed) text.replaceWith(parsed);
   }
   // A parser never produces adjacent text nodes.
