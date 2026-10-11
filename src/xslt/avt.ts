@@ -2,7 +2,7 @@
 import { Code, XSLTError } from '../errors.js';
 import { compileXPath, type Resolver } from '../xpath/index.js';
 import { toStr } from '../xpath/value.js';
-import { evaluate, type X } from './runtime.js';
+import type { X } from './runtime.js';
 
 export type Avt = (x: X) => string;
 
@@ -40,5 +40,5 @@ export function avt(s: string, resolve: Resolver): Avt {
   }
   if (!parts.length) return () => lit;
   if (lit) parts.push(lit);
-  return (x) => parts.map((p) => (typeof p === 'string' ? p : toStr(evaluate(p, x)))).join('');
+  return (x) => parts.map((p) => (typeof p === 'string' ? p : toStr(p(x)))).join('');
 }

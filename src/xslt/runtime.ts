@@ -1,7 +1,7 @@
 // Run-time state of a transformation, variable scopes and XPath evaluation in XSLT.
 import { Code, XSLTError } from '../errors.js';
 import type { Tree } from '../out/finish.js';
-import type { Env, Expr, FnDef } from '../xpath/compile.js';
+import type { Context, Env, FnDef } from '../xpath/compile.js';
 import { coreFunctions } from '../xpath/fn.js';
 import type { Value } from '../xpath/value.js';
 
@@ -47,13 +47,45 @@ export interface Run extends Tree {
   max: number;
 }
 
-/** Instruction context: current node, position, size, variables in scope. */
-export interface X {
-  n: Node;
-  p: number;
-  s: number;
-  v: Scope | null;
-  r: Run;
+/**
+ * Instruction context: current node, position, size, the variables in scope and the run.
+ * It is an XPath context that is its own environment, so that expressions are evaluated
+ * on it directly.
+ */
+export class X implements Context, Env {
+  readonly e: Env = this;
+
+  constructor(
+    readonly n: Node,
+    readonly p: number,
+    readonly s: number,
+    /** Variable bindings. */
+    readonly b: Scope | null,
+    readonly r: Run,
+  ) {}
+
+  /** The XSLT current node. */
+  get c(): Node {
+    return this.n;
+  }
+
+  get f(): ReadonlyMap<string, FnDef> {
+    return functions;
+  }
+
+  v(k: string): Value | undefined {
+    for (let s = this.b; s; s = s.up) if (s.k === k) return s.v;
+    const r = this.r;
+    const cached = r.g.get(k);
+    if (cached === PENDING) throw new XSLTError(Code.CircularVariable, k);
+    if (cached !== undefined) return cached;
+    const def = r.s.globals.get(k);
+    if (!def) return undefined;
+    r.g.set(k, PENDING);
+    const v = def(new X(r.root, 1, 1, null, r));
+    r.g.set(k, v);
+    return v;
+  }
 }
 
 /** An instruction appends to `out`; xsl:variable returns the context with its binding. */
@@ -67,28 +99,6 @@ export const MAX_DEPTH = 3000;
 
 export const functions: Map<string, FnDef> = new Map(coreFunctions);
 functions.set('current', [0, 0, (c) => [c.e.c ?? c.n]]);
-
-function lookup(x: X, k: string): Value | undefined {
-  for (let s = x.v; s; s = s.up) if (s.k === k) return s.v;
-  const r = x.r;
-  const cached = r.g.get(k);
-  if (cached === PENDING) throw new XSLTError(Code.CircularVariable, k);
-  if (cached !== undefined) return cached;
-  const def = r.s.globals.get(k);
-  if (!def) return undefined;
-  r.g.set(k, PENDING);
-  const v = def({ n: r.root, p: 1, s: 1, v: null, r });
-  r.g.set(k, v);
-  return v;
-}
-
-export function env(x: X): Env {
-  return { v: (k) => lookup(x, k), f: functions, c: x.n };
-}
-
-export function evaluate(e: Expr, x: X): Value {
-  return e({ n: x.n, p: x.p, s: x.s, e: env(x) });
-}
 
 export function seq(instrs: Instr[]): Body {
   return (x, out) => {

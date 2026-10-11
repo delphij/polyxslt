@@ -2,7 +2,7 @@
 import { Code, XSLTError } from '../errors.js';
 import { createElement, setAttribute } from '../out/finish.js';
 import { Axis, axis } from '../xpath/axes.js';
-import type { Env, Expr } from '../xpath/compile.js';
+import type { Expr } from '../xpath/compile.js';
 import { compileXPath, type Resolver } from '../xpath/index.js';
 import { XML_NS } from '../xpath/parse.js';
 import {
@@ -19,15 +19,13 @@ import { type Avt, avt } from './avt.js';
 import { compilePattern } from './pattern.js';
 import {
   type Body,
-  env,
-  evaluate,
   type Instr,
   MAX_DEPTH,
   type Rule,
   type Run,
   type Stylesheet,
   seq,
-  type X,
+  X,
   XSL_NS,
 } from './runtime.js';
 
@@ -194,8 +192,7 @@ function findRule(n: Node, x: X): Rule | undefined {
     (t === 1 || t === 2
       ? s.byName.get((t === 2 ? '@' : '') + (n as Element).localName)
       : undefined) ?? s.other;
-  const e: Env = env(x);
-  return rules.find((r) => r.m(n, e));
+  return rules.find((r) => r.m(n, x));
 }
 
 function builtin(n: Node, x: X, out: Node): void {
@@ -214,7 +211,7 @@ export function applyTemplates(nodes: NodeSet, x: X, out: Node): void {
   if (++r.d > MAX_DEPTH) throw new XSLTError(Code.Limit, 'template depth');
   const s = nodes.length;
   nodes.forEach((n, i) => {
-    const y: X = { n, p: i + 1, s, v: null, r };
+    const y = new X(n, i + 1, s, null, r);
     const rule = findRule(n, y);
     if (rule) rule.b(y, out);
     else builtin(n, y, out);
@@ -254,7 +251,7 @@ function compileSorts(el: Element): Sort | undefined {
     const s = nodes.length;
     const values = nodes.map((n, i) =>
       keys.map((k, j) => {
-        const v = toStr(evaluate(k.sel, { ...x, n, p: i + 1, s }));
+        const v = toStr(k.sel(new X(n, i + 1, s, x.b, x.r)));
         return specs[j]?.num ? toNum(v) : v;
       }),
     );
@@ -288,7 +285,7 @@ instructions.set('apply-templates', (el) => {
   return (x, out) => {
     let nodes: NodeSet;
     if (sel) {
-      nodes = nodeSet(evaluate(sel, x));
+      nodes = nodeSet(sel(x));
     } else {
       nodes = [];
       axis(Axis.Child, x.n, () => true, nodes);
@@ -303,11 +300,11 @@ instructions.set('for-each', (el) => {
   const sort = compileSorts(el);
   const b = body(el);
   return (x, out) => {
-    let nodes = nodeSet(evaluate(sel, x));
+    let nodes = nodeSet(sel(x));
     if (sort) nodes = sort(nodes, x);
     const s = nodes.length;
     nodes.forEach((n, i) => {
-      b({ ...x, n, p: i + 1, s }, out);
+      b(new X(n, i + 1, s, x.b, x.r), out);
     });
     return undefined;
   };
@@ -320,7 +317,7 @@ instructions.set('if', (el) => {
   const test = xpath(el, 'test');
   const b = body(el);
   return (x, out) => {
-    if (toBool(evaluate(test, x))) b(x, out);
+    if (toBool(test(x))) b(x, out);
     return undefined;
   };
 });
@@ -336,7 +333,7 @@ instructions.set('choose', (el) => {
   }
   if (!branches.length || !branches[0]?.[0]) throw new XSLTError(Code.MissingAttribute, 'xsl:when');
   return (x, out) => {
-    const hit = branches.find(([t]) => !t || toBool(evaluate(t, x)));
+    const hit = branches.find(([t]) => !t || toBool(t(x)));
     hit?.[1](x, out);
     return undefined;
   };
@@ -348,7 +345,7 @@ instructions.set('value-of', (el) => {
   const sel = xpath(el, 'select');
   const raw = doe(el);
   return (x, out) => {
-    text(x, out, toStr(evaluate(sel, x)), raw);
+    text(x, out, toStr(sel(x)), raw);
     return undefined;
   };
 });
@@ -412,7 +409,7 @@ function copyChildren(n: Node, x: X, out: Node): void {
 instructions.set('copy-of', (el) => {
   const sel = xpath(el, 'select');
   return (x, out) => {
-    const v = evaluate(sel, x);
+    const v = sel(x);
     if (Array.isArray(v)) {
       for (const n of v) copyNode(n, x, out);
     } else {
@@ -426,7 +423,7 @@ instructions.set('copy-of', (el) => {
 export function variableValue(el: Element): (x: X) => Value {
   if (el.hasAttribute('select')) {
     const sel = xpath(el, 'select');
-    return (x) => evaluate(sel, x);
+    return (x) => sel(x);
   }
   if (!el.hasChildNodes()) return () => '';
   const b = body(el);
@@ -441,8 +438,8 @@ instructions.set('variable', (el) => {
   const k = variableKey(el);
   const value = variableValue(el);
   return (x) => {
-    for (let s = x.v; s; s = s.up) if (s.k === k) throw new XSLTError(Code.Redefinition, k);
-    return { ...x, v: { k, v: value(x), up: x.v } };
+    for (let s = x.b; s; s = s.up) if (s.k === k) throw new XSLTError(Code.Redefinition, k);
+    return new X(x.n, x.p, x.s, { k, v: value(x), up: x.b }, x.r);
   };
 });
 

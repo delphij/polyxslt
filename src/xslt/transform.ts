@@ -2,7 +2,7 @@ import { Code, XSLTError } from '../errors.js';
 import { finish, type Method } from '../out/finish.js';
 import { newGeneration, rootOf } from '../xpath/axes.js';
 import { applyTemplates } from './compile.js';
-import type { Run, Stylesheet } from './runtime.js';
+import { type Run, type Stylesheet, X } from './runtime.js';
 
 export interface Options {
   /** Remove active content from the result (see out/strict.ts). */
@@ -36,7 +36,7 @@ export function run(s: Stylesheet, source: Node, out: Document, opts: Options = 
     max: opts.maxNodes ?? Number.POSITIVE_INFINITY,
   };
   try {
-    applyTemplates([source], { n: source, p: 1, s: 1, v: null, r }, f);
+    applyTemplates([source], new X(source, 1, 1, null, r), f);
   } catch (e) {
     // Deep recursion may exhaust the JavaScript stack before the depth limit is reached:
     // RangeError in Chromium and WebKit, InternalError in Firefox.
