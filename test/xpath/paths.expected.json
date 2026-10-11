@@ -101,5 +101,22 @@
  "11true/2/4/@n1/2/4/2one/2/4/4twoboldtail/2/6/@n2/2/6/2three/2/8",
  "22true/2/6/@n2/2/6/@xml:ids2",
  "boldNaNtrue/2/4/4/2bold",
- "xNaNtrue/2/4/4/@classx"
+ "xNaNtrue/2/4/4/@classx",
+ "xNaNtrue/2/4/4/@classx",
+ "xNaNtrue/2/4/4/@classx",
+ "\n    one\n    twoboldtail\n    \n  NaNtrue/2/4\n    one\n    twoboldtail\n    \n  /2/6\n    three\n    four\n    mixed cdata <here> after\n  ",
+ "oneNaNtrue/2/4/2one/2/4/4twoboldtail/2/6/2three",
+ "oneNaNtrue/2/4/2one/2/4/4twoboldtail/2/6/2three/2/6/4four/2/6/6mixed cdata <here> after",
+ "\n    one\n    twoboldtail\n    \n  NaNtrue/2/4\n    one\n    twoboldtail\n    \n  /2/4/2one/2/4/4twoboldtail/2/4/4/2bold/2/6\n    three\n    four\n    mixed cdata <here> after\n  /2/6/2three/2/6/4four/2/6/6mixed cdata <here> after/2/8",
+ "\n    one\n    twoboldtail\n    \n  NaNtrue/2/4\n    one\n    twoboldtail\n    \n  /2/4/2one/2/4/4twoboldtail/2/4/4/2bold/2/6\n    three\n    four\n    mixed cdata <here> after\n  /2/6/2three/2/6/4four/2/6/6mixed cdata <here> after/2/8",
+ "oneNaNtrue/2/4/2one/2/4/4twoboldtail/2/4/4/2bold/2/6/2three/2/6/4four/2/6/6mixed cdata <here> after",
+ "\n    one\n    twoboldtail\n    \n  NaNtrue/2/4\n    one\n    twoboldtail\n    \n  /2/4/2one/2/4/4twoboldtail/2/6\n    three\n    four\n    mixed cdata <here> after\n  /2/6/2three/2/6/4four/2/6/6mixed cdata <here> after/2/8",
+ "00true/2/@n0/2/4/@n1/2/6/@n2",
+ "oneNaNtrue/2/4/2one/2/4/4twoboldtail/2/6/2three",
+ "oneNaNtrue/2/4/2one/2/4/4twoboldtail/2/6/2three",
+ "oneNaNtrue/2/4/2one/2/4/4twoboldtail/2/6/2three",
+ "oneNaNtrue/2/4/2/1one/2/4/4/1two/2/4/4/3tail/2/6/2/1three/2/6/4/1four/2/6/6/1mixed cdata <here> after",
+ "oneNaNtrue/2/4/2/1one/2/4/4/1two/2/4/4/2bold/2/4/4/3tail/2/6/2/1three/2/6/4/1four/2/6/6/1mixed cdata <here> after",
+ "boldNaNtrue/2/4/4/2bold",
+ "twoboldtailNaNtrue/2/4/4twoboldtail/2/6/4four/2/6/6mixed cdata <here> after"
 ]

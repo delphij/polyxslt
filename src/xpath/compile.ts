@@ -84,13 +84,19 @@ export function filter(nodes: NodeSet, pred: Expr, e: Env): NodeSet {
   });
 }
 
-type StepFn = (nodes: NodeSet, e: Env) => NodeSet;
+// `level` tells that the nodes are at the same depth of the tree: a single node, or what
+// steps on the axes below give from such a set.
+type StepFn = (nodes: NodeSet, e: Env, level: boolean) => NodeSet;
+
+/** Axes that take nodes at one depth, in document order, to nodes at one depth. */
+const keepsLevel = (a: Axis) => a === Axis.Child || a === Axis.Attribute || a === Axis.Self;
 
 function compileStep(st: Step): StepFn {
-  const walk = compileAxis(st.axis, st.test);
+  const a = st.axis;
+  const walk = compileAxis(a, st.test);
   const preds = st.preds.map(compile);
-  const reverse = isReverse(st.axis);
-  return (nodes, e) => {
+  const reverse = isReverse(a);
+  return (nodes, e, level) => {
     const out: Node[] = [];
     for (const n of nodes) {
       let r: Node[] = [];
@@ -99,7 +105,11 @@ function compileStep(st: Step): StepFn {
       if (nodes.length === 1) return reverse ? r.reverse() : r;
       for (const x of r) out.push(x);
     }
-    return sortUnique(out);
+    // The attributes of elements in document order are in document order, and so are the
+    // children of nodes none of which is an ancestor of another; no node comes up twice.
+    return a === Axis.Attribute || a === Axis.Self || (level && a === Axis.Child)
+      ? out
+      : sortUnique(out);
   };
 }
 
@@ -236,12 +246,18 @@ export function compile(ast: Ast): Expr {
       };
     }
     case 'path': {
-      const steps = simplify(ast.steps).map(compileStep);
+      const steps = simplify(ast.steps);
+      const fns = steps.map(compileStep);
       const start = ast.start && compile(ast.start);
       const root = ast.root;
       return (c) => {
         let ns: NodeSet = start ? pathSet(start(c)) : [root ? rootOf(c.n) : c.n];
-        for (const s of steps) ns = s(ns, c.e);
+        let level = false;
+        for (const [i, f] of fns.entries()) {
+          level ||= ns.length < 2;
+          ns = f(ns, c.e, level);
+          level &&= keepsLevel((steps[i] as Step).axis);
+        }
         return ns;
       };
     }

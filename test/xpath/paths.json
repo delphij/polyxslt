@@ -419,6 +419,74 @@
     {
       "expr": "/doc/sec[@a:k]/p[@class]/@class",
       "nodes": true
+    },
+    {
+      "expr": "/doc/sec/p/@class",
+      "nodes": true
+    },
+    {
+      "expr": "//p/@class",
+      "nodes": true
+    },
+    {
+      "expr": "//sec/p/..",
+      "nodes": true
+    },
+    {
+      "expr": "//*/self::p",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/*/*/self::*",
+      "nodes": true
+    },
+    {
+      "expr": "//*/*",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/descendant-or-self::*/*",
+      "nodes": true
+    },
+    {
+      "expr": "(//sec | //p)/*",
+      "nodes": true
+    },
+    {
+      "expr": "(/doc | /doc/sec)/*",
+      "nodes": true
+    },
+    {
+      "expr": "(/doc | /doc/sec)/@n",
+      "nodes": true
+    },
+    {
+      "expr": "(/doc/sec[2] | /doc/sec[1])/p",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec/@n/../p",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec/p/../../sec/p",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec/*/text()",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec/node()/self::*/node()",
+      "nodes": true
+    },
+    {
+      "expr": "/*/*/..//b",
+      "nodes": true
+    },
+    {
+      "expr": "/doc/sec/p[1]/following-sibling::*/self::*",
+      "nodes": true
     }
   ]
 }
