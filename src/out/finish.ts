@@ -16,7 +16,6 @@ export type Method = 'html' | 'xml' | 'text';
 /** Settings from xsl:output that affect the result tree. */
 export interface Output {
   method: Method;
-  encoding?: string;
   /** Strict mode: remove active content (see strict.ts). */
   strict?: boolean;
 }
@@ -227,25 +226,6 @@ function impliedTbody(doc: Document, f: DocumentFragment): void {
   }
 }
 
-const named = (n: Node | null, name: string) =>
-  n?.nodeType === 1 && (n as Element).localName.toLowerCase() === name;
-
-function isEncodingMeta(n: Node): boolean {
-  const e = n as Element;
-  return (
-    named(n, 'meta') &&
-    (e.hasAttribute('charset') || e.getAttribute('http-equiv')?.toLowerCase() === 'content-type')
-  );
-}
-
-// libxslt adds <meta charset> to the <head> of an <html> result that has none.
-function metaHead(f: DocumentFragment): Element | undefined {
-  const html = f.firstElementChild;
-  if (!named(html, 'html')) return undefined;
-  const head = [...(html as Element).children].find((c) => named(c, 'head'));
-  return head && ![...head.children].some(isEncodingMeta) ? head : undefined;
-}
-
 // An HTML parser always creates <head> and <body> in <html>; page scripts may rely on them.
 function impliedElements(doc: Document, f: DocumentFragment): void {
   const html = f.firstElementChild;
@@ -282,11 +262,6 @@ export function finish(t: Tree, out: Output): DocumentFragment {
     return text;
   }
   if (method === 'html') {
-    const head = metaHead(f);
-    if (head) {
-      head.prepend(createElement(t, head, null, 'meta'));
-      (head.firstChild as Element).setAttribute('charset', out.encoding ?? 'UTF-8');
-    }
     if (t.redo) toHtml(t, f);
     impliedElements(doc, f);
     impliedTbody(doc, f);

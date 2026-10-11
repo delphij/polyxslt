@@ -31,7 +31,7 @@ export interface Stylesheet {
   other: Rule[];
   globals: Map<string, (x: X) => Value>;
   /** Settings from xsl:output. */
-  output: { method?: string; encoding?: string };
+  output: { method?: string };
 }
 
 export interface Run extends Tree {

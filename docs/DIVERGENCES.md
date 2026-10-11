@@ -32,8 +32,6 @@ built here is meant to match what the browser ends up with, so it reproduces the
   and non-ASCII characters are percent-encoded as UTF-8;
 - `<html>` always has `<head>` and `<body>`, and table rows written directly in a
   `<table>` are placed in a `<tbody>`;
-- a `<head>` without an encoding declaration gets `<meta charset>` with the output
-  encoding (UTF-8 by default), as libxslt adds one.
 
 Processing instructions in the result stay processing instructions. libxslt writes them as
 `<?target data>`; Chromium's HTML parser reads that as a processing instruction, Firefox's
@@ -55,6 +53,7 @@ matter where such whitespace is rendered, for example between elements styled as
 | Very small number literals | `5e-324` evaluates to 0 | parsed as a double | libxslt's own number parser underflows |
 | Namespace declarations in html output | written as `xmlns:p` attributes, which an HTML parser keeps as ordinary attributes | not produced | they have no effect on the page |
 | Namespaced attribute whose prefix is in use | libxslt picks another prefix, such as `n_1` | the prefix is kept | rare |
+| Encoding declaration in html output | a `<head>` without one gets `<meta charset>` with the output encoding | not added | the result is a DOM tree, not bytes; the element would declare nothing |
 | Other HTML parser corrections | misnested `<p>`, text inside tables and similar cases are rearranged by the parser | not reproduced | only the corrections listed above are reproduced |
 | disable-output-escaping | the text is written unescaped and parsed together with the rest | each piece is parsed on its own; markup split across several pieces is not joined | the result is built as DOM, not as text |
 | Recursion depth | 3000 nested templates | 3000, or fewer if the JavaScript stack runs out first; either way an error | |

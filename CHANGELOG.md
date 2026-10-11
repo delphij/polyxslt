@@ -13,6 +13,10 @@ with 1.0.2, depending on the browser.
 - A match pattern with predicates no longer evaluates them for all siblings of each node
   tried, unless they depend on the position.
 - HTML written with `disable-output-escaping` is moved into the result, not copied.
+- The html output method no longer adds `<meta charset>` to a `<head>` that has no
+  encoding declaration. The result is a DOM tree, where the element declares nothing; a
+  page that looks for it has to write it in the stylesheet. The `encoding` attribute of
+  `xsl:output` is still accepted and has no effect.
 - A match pattern that spells out `descendant-or-self::node()` is an error, as it is for
   xsltproc; `//` is the way to write it.
 

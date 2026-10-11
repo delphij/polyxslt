@@ -500,9 +500,7 @@ export function compileStylesheet(doc: Document): Stylesheet {
         return;
       case 'output': {
         const m = el.getAttribute('method');
-        const encoding = el.getAttribute('encoding');
         if (m !== null) output.method = m;
-        if (encoding !== null) output.encoding = encoding;
         return;
       }
       default:
