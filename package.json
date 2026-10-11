@@ -53,6 +53,7 @@
     "golden": "node scripts/golden.mjs",
     "golden:check": "node scripts/golden.mjs && git diff --exit-code -- test/fixtures test/xpath",
     "size": "size-limit",
+    "bench": "node scripts/bench.mjs",
     "verify:private": "node scripts/verify-private.mjs",
     "docs:check": "node scripts/docs.mjs && git diff --exit-code -- docs/SUPPORTED.md docs/ERRORS.md",
     "docs:gen": "node scripts/docs.mjs",
