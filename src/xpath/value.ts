@@ -6,6 +6,9 @@ import { Code, XSLTError } from '../errors.js';
 export type NodeSet = Node[];
 export type Value = string | number | boolean | NodeSet;
 
+/** Whether a string consists of XML white space only. */
+export const isBlank = (s: string): boolean => !/[^\x20\t\r\n]/.test(s);
+
 export function isText(n: Node | null): boolean {
   const t = n?.nodeType;
   return t === 3 || t === 4;
@@ -55,7 +58,7 @@ export function numberToString(x: number): string {
 const NUMBER = /^[\x20\t\r\n]*-?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?[\x20\t\r\n]*$/;
 
 export function stringToNumber(s: string): number {
-  return NUMBER.test(s) ? Number(s.replace(/[\x20\t\r\n]/g, '')) : Number.NaN;
+  return NUMBER.test(s) ? Number(s) : Number.NaN;
 }
 
 export function toStr(v: Value): string {

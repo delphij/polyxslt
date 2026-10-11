@@ -1,5 +1,5 @@
 // The XPath 1.0 core function library (XPath 1.0 §4).
-import { rootOf, sortUnique } from './axes.js';
+import { parentOf, rootOf, sortUnique } from './axes.js';
 import type { Context, FnDef } from './compile.js';
 import { XML_NS } from './parse.js';
 import { type NodeSet, nodeSet, stringValue, toBool, toNum, toStr, type Value } from './value.js';
@@ -55,11 +55,7 @@ function id(c: Context, [v]: Value[]): NodeSet {
 
 function lang(c: Context, [v]: Value[]): boolean {
   const want = toStr(v as Value).toLowerCase();
-  for (
-    let n: Node | null = c.n;
-    n;
-    n = n.nodeType === 2 ? (n as Attr).ownerElement : n.parentNode
-  ) {
+  for (let n: Node | null = c.n; n; n = parentOf(n)) {
     const l = n.nodeType === 1 ? (n as Element).getAttributeNS(XML_NS, 'lang') : null;
     if (l !== null) {
       const have = l.toLowerCase();

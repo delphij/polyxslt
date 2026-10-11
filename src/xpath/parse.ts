@@ -3,6 +3,7 @@
 // operator, elsewhere it is a name test.
 import { Code, XSLTError } from '../errors.js';
 import { AXIS_NAMES, Axis } from './axes.js';
+import { isBlank } from './value.js';
 
 export type NameTest = { ns?: string | null; local: string };
 export type TypeTest = { type: string; target?: string };
@@ -28,6 +29,33 @@ export type Ast =
 export type Resolver = (prefix: string) => string | null;
 
 export const XML_NS = 'http://www.w3.org/XML/1998/namespace';
+
+/** Expands a QName to a namespace URI and a local name; an unprefixed name gets `dflt`. */
+export function expand(
+  qname: string,
+  resolve: Resolver,
+  dflt: string | null = null,
+): [ns: string | null, local: string] {
+  const c = qname.indexOf(':');
+  if (c < 0) return [dflt, qname];
+  const prefix = qname.slice(0, c);
+  const ns = prefix === 'xml' ? XML_NS : resolve(prefix);
+  if (ns === null) throw new XSLTError(Code.UnknownPrefix, prefix);
+  return [ns, qname.slice(c + 1)];
+}
+
+/** The expanded name of a variable or function: `local` or `{uri}local`. */
+export function expandedName(qname: string, resolve: Resolver): string {
+  const [ns, local] = expand(qname, resolve);
+  return ns === null ? local : `{${ns}}${local}`;
+}
+
+/** The step that `//` stands for; the parser produces this very object. */
+export const DESCENDANT_OR_SELF: Step = {
+  axis: Axis.DescendantOrSelf,
+  test: { type: 'node' },
+  preds: [],
+};
 
 // XML 1.0 (5th ed.) NameStartChar and NameChar, without the colon.
 const START =
@@ -71,7 +99,7 @@ function lex(src: string): Token[] {
     else if (m[4] !== undefined) out.push({ k: K.Name, v: m[4] });
     else out.push({ k: K.Punct, v: m[5] ?? '' });
   }
-  if (!/^[\x20\t\r\n]*$/.test(src.slice(pos))) throw new XSLTError(Code.XPathSyntax, src);
+  if (!isBlank(src.slice(pos))) throw new XSLTError(Code.XPathSyntax, src);
   out.push({ k: K.End, v: '' });
   return out;
 }
@@ -108,20 +136,6 @@ export function parse(src: string, resolve: Resolver): Ast {
     i++;
   };
 
-  // Expands a QName; an unprefixed name has no namespace.
-  const expand = (qname: string): [ns: string | null, local: string] => {
-    const c = qname.indexOf(':');
-    if (c < 0) return [null, qname];
-    const prefix = qname.slice(0, c);
-    const ns = prefix === 'xml' ? XML_NS : resolve(prefix);
-    if (ns === null) throw new XSLTError(Code.UnknownPrefix, prefix);
-    return [ns, qname.slice(c + 1)];
-  };
-  const key = (qname: string) => {
-    const [ns, local] = expand(qname);
-    return ns === null ? local : `{${ns}}${local}`;
-  };
-
   const isNodeType = (d = 0) =>
     peek(d).k === K.Name && NODE_TYPES.includes(peek(d).v) && is('(', d + 1);
   const startsPrimary = () => {
@@ -147,12 +161,6 @@ export function parse(src: string, resolve: Resolver): Ast {
       eat(']');
     }
     return preds;
-  };
-
-  const DESCENDANT_OR_SELF: Step = {
-    axis: Axis.DescendantOrSelf,
-    test: { type: 'node' },
-    preds: [],
   };
 
   const step = (): Step => {
@@ -183,10 +191,10 @@ export function parse(src: string, resolve: Resolver): Ast {
     } else if (t.k === K.Name) {
       i++;
       if (t.v.endsWith(':*')) {
-        const [ns] = expand(`${t.v.slice(0, -2)}:x`);
+        const [ns] = expand(t.v, resolve);
         test = { ns, local: '*' };
       } else {
-        const [ns, local] = expand(t.v);
+        const [ns, local] = expand(t.v, resolve);
         test = { ns, local };
       }
     } else {
@@ -211,7 +219,7 @@ export function parse(src: string, resolve: Resolver): Ast {
     if (t.v === '$') {
       const n = toks[i++] as Token;
       if (n.k !== K.Name || n.v.endsWith(':*')) fail();
-      return { t: 'var', name: key(n.v) };
+      return { t: 'var', name: expandedName(n.v, resolve) };
     }
     if (t.v === '(') {
       const e = expr(1);
@@ -229,7 +237,7 @@ export function parse(src: string, resolve: Resolver): Ast {
       }
     }
     eat(')');
-    return { t: 'fn', name: key(t.v), args };
+    return { t: 'fn', name: expandedName(t.v, resolve), args };
   };
 
   const path = (): Ast => {
@@ -268,22 +276,15 @@ export function parse(src: string, resolve: Resolver): Ast {
     return { t: 'neg', e: unary() };
   };
 
-  const operator = (): string | undefined => {
-    const t = peek();
-    if (t.k === K.Punct || (t.k === K.Name && /^(and|or|div|mod)$/.test(t.v))) {
-      return PRECEDENCE.has(t.v) ? t.v : undefined;
-    }
-    return undefined;
-  };
-
   function expr(min: number): Ast {
     let l = unary();
     for (;;) {
-      const op = operator();
-      const prec = op ? (PRECEDENCE.get(op) ?? 0) : 0;
-      if (!op || prec < min) return l;
+      // In operator position a name is an operator name (§3.7).
+      const t = peek();
+      const prec = (t.k === K.Punct || t.k === K.Name) && PRECEDENCE.get(t.v);
+      if (!prec || prec < min) return l;
       i++;
-      l = { t: 'op', op, l, r: expr(prec + 1) };
+      l = { t: 'op', op: t.v, l, r: expr(prec + 1) };
     }
   }
 

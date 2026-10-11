@@ -6,7 +6,14 @@
 import { Code, XSLTError } from '../errors.js';
 import { Axis, axis, parentOf } from '../xpath/axes.js';
 import { compile, compileTest, type Env, filter } from '../xpath/compile.js';
-import { type Ast, type NameTest, parse, type Resolver, type Step } from '../xpath/parse.js';
+import {
+  type Ast,
+  DESCENDANT_OR_SELF,
+  type NameTest,
+  parse,
+  type Resolver,
+  type Step,
+} from '../xpath/parse.js';
 import { toBool } from '../xpath/value.js';
 
 export interface Alternative {
@@ -21,14 +28,11 @@ function isRoot(n: Node | null): boolean {
   return !!n && (n.nodeType === 9 || n.nodeType === 11) && !n.parentNode;
 }
 
-const isDescendantStep = (s: Step) =>
-  s.axis === Axis.DescendantOrSelf && !s.preds.length && 'type' in s.test && s.test.type === 'node';
-
 function alternative(ast: Ast, src: string): Alternative {
   if (ast.t !== 'path' || ast.start) throw new XSLTError(Code.BadPattern, src);
   const { root, steps } = ast;
   for (const s of steps) {
-    if (s.axis !== Axis.Child && s.axis !== Axis.Attribute && !isDescendantStep(s)) {
+    if (s.axis !== Axis.Child && s.axis !== Axis.Attribute && s !== DESCENDANT_OR_SELF) {
       throw new XSLTError(Code.BadPattern, src);
     }
   }
@@ -79,7 +83,7 @@ function alternative(ast: Ast, src: string): Alternative {
   const match = (n: Node, i: number, e: Env): boolean => {
     if (!step(n, i, e)) return false;
     if (i === 0) return !root || isRoot(parentOf(n));
-    if (isDescendantStep(steps[i - 1] as Step)) {
+    if (steps[i - 1] === DESCENDANT_OR_SELF) {
       if (i === 1) return true;
       for (let a = parentOf(n); a; a = parentOf(a)) if (match(a, i - 2, e)) return true;
       return false;

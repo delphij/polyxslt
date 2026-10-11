@@ -2,7 +2,9 @@
 import { XHTML_NS } from '../out/finish.js';
 import { compileStylesheet } from '../xslt/compile.js';
 import type { Stylesheet } from '../xslt/runtime.js';
-import { run } from '../xslt/transform.js';
+import { type Result, run } from '../xslt/transform.js';
+
+const key = (ns: string | null, name: string) => `${ns ?? ''} ${name}`;
 
 export class XSLTProcessor {
   #sheet: Stylesheet | undefined;
@@ -17,11 +19,15 @@ export class XSLTProcessor {
     this.#sheet = compileStylesheet(doc);
   }
 
+  #run(source: Node, output: Document): Result {
+    if (!this.#sheet) throw new Error('no stylesheet imported');
+    return run(this.#sheet, source, output);
+  }
+
   /** Returns null on failure, as Chromium does; the error is logged. */
   transformToFragment(source: Node, output: Document): DocumentFragment | null {
     try {
-      if (!this.#sheet) throw new Error('no stylesheet imported');
-      return run(this.#sheet, source, output).fragment;
+      return this.#run(source, output).fragment;
     } catch (e) {
       console.error(e);
       return null;
@@ -30,9 +36,8 @@ export class XSLTProcessor {
 
   transformToDocument(source: Node): Document | null {
     try {
-      if (!this.#sheet) throw new Error('no stylesheet imported');
       const html = document.implementation.createHTMLDocument('');
-      const { fragment, method } = run(this.#sheet, source, html);
+      const { fragment, method } = this.#run(source, html);
       if (method === 'xml') {
         const xml = document.implementation.createDocument(null, null);
         xml.appendChild(xml.importNode(fragment, true));
@@ -54,15 +59,15 @@ export class XSLTProcessor {
 
   // xsl:param is not supported in 1.0; parameters are kept for the interface only.
   setParameter(ns: string | null, name: string, value: unknown): void {
-    this.#params.set(`${ns ?? ''} ${name}`, value);
+    this.#params.set(key(ns, name), value);
   }
 
   getParameter(ns: string | null, name: string): unknown {
-    return this.#params.get(`${ns ?? ''} ${name}`) ?? null;
+    return this.#params.get(key(ns, name)) ?? null;
   }
 
   removeParameter(ns: string | null, name: string): void {
-    this.#params.delete(`${ns ?? ''} ${name}`);
+    this.#params.delete(key(ns, name));
   }
 
   clearParameters(): void {

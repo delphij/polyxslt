@@ -4,9 +4,10 @@ import { createElement, setAttribute } from '../out/finish.js';
 import { Axis, axis } from '../xpath/axes.js';
 import type { Expr } from '../xpath/compile.js';
 import { compileXPath, type Resolver } from '../xpath/index.js';
-import { XML_NS } from '../xpath/parse.js';
+import { expand, expandedName, XML_NS } from '../xpath/parse.js';
 import {
   fragments,
+  isBlank,
   type NodeSet,
   nodeSet,
   stringValue,
@@ -76,20 +77,14 @@ const optionalAvt = (el: Element, name: string, dflt: string): Avt => {
   return v === null ? () => dflt : avt(v, resolver(el));
 };
 
-/** Expands a QName using the namespace declarations in scope at `el`. */
-function qname(name: string, el: Element, useDefault: boolean): [ns: string | null, local: string] {
-  const c = name.indexOf(':');
-  if (c < 0) return [useDefault ? el.lookupNamespaceURI(null) : null, name];
-  const prefix = name.slice(0, c);
-  const ns = prefix === 'xml' ? XML_NS : el.lookupNamespaceURI(prefix);
-  if (ns === null) throw new XSLTError(Code.UnknownPrefix, prefix);
-  return [ns, name.slice(c + 1)];
-}
+const isXsl = (el: Element, name: string) => el.namespaceURI === XSL_NS && el.localName === name;
 
-function variableKey(el: Element): string {
-  const [ns, local] = qname(attr(el, 'name'), el, false);
-  return ns === null ? local : `{${ns}}${local}`;
-}
+// An XSLT element that is not known here: not supported, or not an XSLT element at all.
+const unknown = (el: Element) =>
+  new XSLTError(
+    UNSUPPORTED.includes(el.localName) ? Code.Unsupported : Code.UnknownInstruction,
+    `xsl:${el.localName}`,
+  );
 
 function preserveSpace(el: Element): boolean {
   for (let e: Element | null = el; e; e = e.parentElement) {
@@ -108,10 +103,9 @@ export function body(el: Element): Body {
       out.push(instruction(c as Element));
     } else if (c.nodeType === 3 || c.nodeType === 4) {
       const t = c.nodeValue ?? '';
-      if (keepSpace || !/^[\x20\t\r\n]*$/.test(t)) {
+      if (keepSpace || !isBlank(t)) {
         out.push((x, o) => {
           text(x, o, t, false);
-          return undefined;
         });
       }
     }
@@ -122,12 +116,7 @@ export function body(el: Element): Body {
 function instruction(el: Element): Instr {
   if (el.namespaceURI !== XSL_NS) return literal(el);
   const c = instructions.get(el.localName);
-  if (!c) {
-    throw new XSLTError(
-      UNSUPPORTED.includes(el.localName) ? Code.Unsupported : Code.UnknownInstruction,
-      `xsl:${el.localName}`,
-    );
-  }
+  if (!c) throw unknown(el);
   return c(el);
 }
 
@@ -179,7 +168,6 @@ function literal(el: Element): Instr {
     const e = element(x, out, ns, name);
     for (const [ans, an, v] of attrs) setAttribute(x.r, e, ans, an, v(x));
     b(x, e);
-    return undefined;
   };
 }
 
@@ -195,12 +183,16 @@ function findRule(n: Node, x: X): Rule | undefined {
   return rules.find((r) => r.m(n, x));
 }
 
+function children(n: Node): NodeSet {
+  const out: Node[] = [];
+  axis(Axis.Child, n, () => true, out);
+  return out;
+}
+
 function builtin(n: Node, x: X, out: Node): void {
   const t = n.nodeType;
   if (t === 1 || t === 9 || t === 11) {
-    const children: Node[] = [];
-    axis(Axis.Child, n, () => true, children);
-    applyTemplates(children, x, out);
+    applyTemplates(children(n), x, out);
   } else if (t === 2 || t === 3 || t === 4) {
     text(x, out, stringValue(n), false);
   }
@@ -225,7 +217,7 @@ type Sort = (nodes: NodeSet, x: X) => NodeSet;
 
 function compileSorts(el: Element): Sort | undefined {
   const keys = [...el.children]
-    .filter((c) => c.namespaceURI === XSL_NS && c.localName === 'sort')
+    .filter((c) => isXsl(c, 'sort'))
     .map((k) => ({
       sel: compileXPath(k.getAttribute('select') ?? '.', resolver(k)),
       order: optionalAvt(k, 'order', 'ascending'),
@@ -249,17 +241,21 @@ function compileSorts(el: Element): Sort | undefined {
       };
     });
     const s = nodes.length;
-    const values = nodes.map((n, i) =>
-      keys.map((k, j) => {
-        const v = toStr(k.sel(new X(n, i + 1, s, x.b, x.r)));
-        return specs[j]?.num ? toNum(v) : v;
-      }),
-    );
-    const order = nodes.map((_, i) => i);
-    order.sort((a, b) => {
+    // The keys of each node are computed once, before sorting.
+    const rows = nodes.map((n, i) => {
+      const y = new X(n, i + 1, s, x.b, x.r);
+      return {
+        n,
+        k: keys.map((k, j) => {
+          const v = toStr(k.sel(y));
+          return specs[j]?.num ? toNum(v) : v;
+        }),
+      };
+    });
+    rows.sort((a, b) => {
       for (const [j, spec] of specs.entries()) {
-        const u = values[a]?.[j] as string | number;
-        const v = values[b]?.[j] as string | number;
+        const u = a.k[j] as string | number;
+        const v = b.k[j] as string | number;
         let c: number;
         if (spec.num) {
           const p = u as number;
@@ -272,7 +268,7 @@ function compileSorts(el: Element): Sort | undefined {
       }
       return 0;
     });
-    return order.map((i) => nodes[i] as Node);
+    return rows.map((r) => r.n);
   };
 }
 
@@ -283,15 +279,8 @@ instructions.set('apply-templates', (el) => {
   const sel = el.hasAttribute('select') ? xpath(el, 'select') : undefined;
   const sort = compileSorts(el);
   return (x, out) => {
-    let nodes: NodeSet;
-    if (sel) {
-      nodes = nodeSet(sel(x));
-    } else {
-      nodes = [];
-      axis(Axis.Child, x.n, () => true, nodes);
-    }
+    const nodes = sel ? nodeSet(sel(x)) : children(x.n);
     applyTemplates(sort ? sort(nodes, x) : nodes, x, out);
-    return undefined;
   };
 });
 
@@ -306,36 +295,31 @@ instructions.set('for-each', (el) => {
     nodes.forEach((n, i) => {
       b(new X(n, i + 1, s, x.b, x.r), out);
     });
-    return undefined;
   };
 });
 
 // Handled by the enclosing for-each or apply-templates.
-instructions.set('sort', () => () => undefined);
+instructions.set('sort', () => () => {});
 
 instructions.set('if', (el) => {
   const test = xpath(el, 'test');
   const b = body(el);
   return (x, out) => {
     if (toBool(test(x))) b(x, out);
-    return undefined;
   };
 });
 
 instructions.set('choose', (el) => {
   const branches: [Expr | undefined, Body][] = [];
   for (const c of el.children) {
-    if (c.namespaceURI === XSL_NS && c.localName === 'when')
-      branches.push([xpath(c, 'test'), body(c)]);
-    else if (c.namespaceURI === XSL_NS && c.localName === 'otherwise')
-      branches.push([undefined, body(c)]);
+    if (isXsl(c, 'when')) branches.push([xpath(c, 'test'), body(c)]);
+    else if (isXsl(c, 'otherwise')) branches.push([undefined, body(c)]);
     else throw new XSLTError(Code.UnknownInstruction, c.nodeName);
   }
   if (!branches.length || !branches[0]?.[0]) throw new XSLTError(Code.MissingAttribute, 'xsl:when');
   return (x, out) => {
     const hit = branches.find(([t]) => !t || toBool(t(x)));
     hit?.[1](x, out);
-    return undefined;
   };
 });
 
@@ -346,7 +330,6 @@ instructions.set('value-of', (el) => {
   const raw = doe(el);
   return (x, out) => {
     text(x, out, toStr(sel(x)), raw);
-    return undefined;
   };
 });
 
@@ -355,7 +338,6 @@ instructions.set('text', (el) => {
   const raw = doe(el);
   return (x, out) => {
     text(x, out, s, raw);
-    return undefined;
   };
 });
 
@@ -401,9 +383,7 @@ function copyNode(n: Node, x: X, out: Node): void {
 }
 
 function copyChildren(n: Node, x: X, out: Node): void {
-  const children: Node[] = [];
-  axis(Axis.Child, n, () => true, children);
-  for (const c of children) copyNode(c, x, out);
+  for (const c of children(n)) copyNode(c, x, out);
 }
 
 instructions.set('copy-of', (el) => {
@@ -415,7 +395,6 @@ instructions.set('copy-of', (el) => {
     } else {
       text(x, out, toStr(v), false);
     }
-    return undefined;
   };
 });
 
@@ -435,7 +414,7 @@ export function variableValue(el: Element): (x: X) => Value {
 }
 
 instructions.set('variable', (el) => {
-  const k = variableKey(el);
+  const k = expandedName(attr(el, 'name'), resolver(el));
   const value = variableValue(el);
   return (x) => {
     for (let s = x.b; s; s = s.up) if (s.k === k) throw new XSLTError(Code.Redefinition, k);
@@ -455,9 +434,13 @@ instructions.set('element', (el) => {
   const b = body(el);
   return (x, out) => {
     const n = name(x);
-    const e = element(x, out, ns ? ns(x) || null : qname(n, el, true)[0], n);
+    const e = element(
+      x,
+      out,
+      ns ? ns(x) || null : expand(n, resolver(el), el.lookupNamespaceURI(null))[0],
+      n,
+    );
     b(x, e);
-    return undefined;
   };
 });
 
@@ -467,16 +450,15 @@ instructions.set('attribute', (el) => {
   return (x, out) => {
     const n = name(x);
     if (n === 'xmlns' || n.startsWith('xmlns:')) throw new XSLTError(Code.BadName, n);
-    const uri = ns ? ns(x) || null : qname(n, el, false)[0];
+    const uri = ns ? ns(x) || null : expand(n, resolver(el))[0];
     const value = fragment(b, x).textContent ?? '';
-    if (out.nodeType !== 1) return undefined;
+    if (out.nodeType !== 1) return;
     if (out.hasChildNodes()) throw new XSLTError(Code.AttributeAfterChildren, n);
     try {
       setAttribute(x.r, out as Element, uri, n, value);
     } catch {
       throw new XSLTError(Code.BadName, n);
     }
-    return undefined;
   };
 });
 
@@ -514,7 +496,7 @@ export function compileStylesheet(doc: Document): Stylesheet {
         return;
       }
       case 'variable':
-        globals.set(variableKey(el), variableValue(el));
+        globals.set(expandedName(attr(el, 'name'), resolver(el)), variableValue(el));
         return;
       case 'output': {
         const m = el.getAttribute('method');
@@ -524,10 +506,7 @@ export function compileStylesheet(doc: Document): Stylesheet {
         return;
       }
       default:
-        throw new XSLTError(
-          UNSUPPORTED.includes(el.localName) ? Code.Unsupported : Code.UnknownInstruction,
-          `xsl:${el.localName}`,
-        );
+        throw unknown(el);
     }
   });
 

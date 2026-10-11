@@ -1,7 +1,7 @@
 // Compiles an XPath AST into closures.
 import { Code, XSLTError } from '../errors.js';
 import { Axis, axis, isReverse, rootOf, sortUnique, type Test, XMLNS } from './axes.js';
-import type { Ast, NodeTest, Step } from './parse.js';
+import { type Ast, DESCENDANT_OR_SELF, type NodeTest, type Step } from './parse.js';
 import { isText, type NodeSet, pathSet, stringValue, toBool, toNum, type Value } from './value.js';
 
 export type Fn = (c: Context, args: Value[]) => Value;
@@ -113,20 +113,13 @@ function compileStep(st: Step): StepFn {
   };
 }
 
-// descendant-or-self::node()/child::x without predicates is descendant::x, which avoids
-// sorting a large intermediate node-set.
+// `//x` without predicates is descendant::x, which avoids sorting a large intermediate
+// node-set.
 function simplify(steps: Step[]): Step[] {
   const out: Step[] = [];
   for (const s of steps) {
     const prev = out[out.length - 1];
-    if (
-      prev?.axis === Axis.DescendantOrSelf &&
-      !prev.preds.length &&
-      'type' in prev.test &&
-      prev.test.type === 'node' &&
-      s.axis === Axis.Child &&
-      !s.preds.length
-    ) {
+    if (prev === DESCENDANT_OR_SELF && s.axis === Axis.Child && !s.preds.length) {
       out[out.length - 1] = { ...s, axis: Axis.Descendant };
     } else {
       out.push(s);
