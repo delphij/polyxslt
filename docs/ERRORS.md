@@ -14,7 +14,7 @@ code; development builds (`dist/dev`) also carry the message below and details.
 | 13 | BadArity | wrong number of arguments |
 | 14 | NotNodeSet | value is not a node-set |
 | 15 | UndefinedVariable | undefined variable |
-| 20 | UnknownInstruction | unknown XSLT element |
+| 20 | UnknownInstruction | XSLT element not supported |
 | 21 | MissingAttribute | required attribute missing |
 | 22 | BadPattern | invalid pattern |
 | 23 | BadAvt | invalid attribute value template |

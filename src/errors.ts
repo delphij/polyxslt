@@ -28,7 +28,7 @@ const messages: Record<number, string> | undefined = __DEV__
       [Code.BadArity]: 'wrong number of arguments',
       [Code.NotNodeSet]: 'value is not a node-set',
       [Code.UndefinedVariable]: 'undefined variable',
-      [Code.UnknownInstruction]: 'unknown XSLT element',
+      [Code.UnknownInstruction]: 'XSLT element not supported',
       [Code.MissingAttribute]: 'required attribute missing',
       [Code.BadPattern]: 'invalid pattern',
       [Code.BadAvt]: 'invalid attribute value template',

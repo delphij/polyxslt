@@ -34,29 +34,6 @@ const XMLNS_NS = 'http://www.w3.org/2000/xmlns/';
 
 type InstrCompiler = (el: Element) => Instr;
 
-// XSLT elements outside 1.0 of this implementation, reported as not supported rather
-// than unknown.
-export const UNSUPPORTED: readonly string[] = [
-  'apply-imports',
-  'attribute-set',
-  'call-template',
-  'comment',
-  'copy',
-  'decimal-format',
-  'fallback',
-  'import',
-  'include',
-  'key',
-  'message',
-  'namespace-alias',
-  'number',
-  'param',
-  'preserve-space',
-  'processing-instruction',
-  'strip-space',
-  'with-param',
-];
-
 /** XSLT instructions by local name; extension modules may add to it. */
 export const instructions: Map<string, InstrCompiler> = new Map();
 
@@ -79,12 +56,8 @@ const optionalAvt = (el: Element, name: string, dflt: string): Avt => {
 
 const isXsl = (el: Element, name: string) => el.namespaceURI === XSL_NS && el.localName === name;
 
-// An XSLT element that is not known here: not supported, or not an XSLT element at all.
-const unknown = (el: Element) =>
-  new XSLTError(
-    UNSUPPORTED.includes(el.localName) ? Code.Unsupported : Code.UnknownInstruction,
-    `xsl:${el.localName}`,
-  );
+// An XSLT element that is not implemented here, or is not an XSLT element at all.
+const unknown = (el: Element) => new XSLTError(Code.UnknownInstruction, `xsl:${el.localName}`);
 
 function preserveSpace(el: Element): boolean {
   for (let e: Element | null = el; e; e = e.parentElement) {

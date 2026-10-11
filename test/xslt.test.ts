@@ -22,13 +22,20 @@ function code(f: () => unknown): Code | undefined {
 }
 
 describe('features outside 1.0 are rejected as unsupported', () => {
-  const cases: [string, Document][] = [
+  const elements: [string, Document][] = [
     ['xsl:import', sheet('', '<xsl:import href="x.xsl"/>')],
     ['xsl:key', sheet('', '<xsl:key name="k" match="a" use="."/>')],
     ['xsl:param', sheet('', '<xsl:param name="p"/>')],
     ['xsl:strip-space', sheet('', '<xsl:strip-space elements="*"/>')],
     ['xsl:call-template', sheet('<xsl:call-template name="t"/>')],
     ['xsl:number', sheet('<xsl:number/>')],
+    ['an element that XSLT 1.0 does not have', sheet('<xsl:sequence select="1"/>')],
+  ];
+  for (const [name, doc] of elements) {
+    test(name, () => expect(code(() => compileStylesheet(doc))).toBe(Code.UnknownInstruction));
+  }
+
+  const cases: [string, Document][] = [
     ['mode', sheet('<xsl:apply-templates mode="m"/>')],
     ['use-attribute-sets', sheet('<p xsl:use-attribute-sets="s"/>')],
     ['output method', sheet('', '<xsl:output method="xhtml"/>')],

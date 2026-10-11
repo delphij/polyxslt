@@ -17,6 +17,9 @@ with 1.0.2, depending on the browser.
   encoding declaration. The result is a DOM tree, where the element declares nothing; a
   page that looks for it has to write it in the stylesheet. The `encoding` attribute of
   `xsl:output` is still accepted and has no effect.
+- An XSLT element that is not implemented, such as `xsl:key`, is reported as error 20
+  (`UnknownInstruction`), like any element that is not known, instead of error 2. Error 2
+  remains for `mode`, attribute sets, other output methods and the `namespace` axis.
 - A match pattern that spells out `descendant-or-self::node()` is an error, as it is for
   xsltproc; `//` is the way to write it.
 
