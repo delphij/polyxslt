@@ -32,10 +32,10 @@ src/
     compile.ts    stylesheet -> rules and instruction closures; the instruction registry
     pattern.ts    match patterns, default priorities
     avt.ts        attribute value templates
-    runtime.ts    context, variable scopes, XPath evaluation, depth limit
+    runtime.ts    instruction context (also the XPath context), variable scopes, depth limit
     transform.ts  runs a compiled stylesheet
   out/
-    finish.ts     output methods; what the html method does to the result tree
+    finish.ts     output methods; creates result elements, in final form for the html method
     strict.ts     strict mode
     trust.ts      the one place HTML text is parsed; Trusted Types
   host/

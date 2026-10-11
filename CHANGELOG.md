@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+Faster transformations; `pnpm bench` measures them (see CONTRIBUTING.md). With the
+benchmark's feed and sitemap stylesheets a transformation takes 35 to 55 % less time than
+with 1.0.2, depending on the browser.
+
+- Under the html output method, result elements are created once, in their final form,
+  instead of being created again when the result is finished.
+- Name tests on the attribute and child axes use the DOM's own lookup, and results that
+  are in document order already are not sorted.
+- A match pattern with predicates no longer evaluates them for all siblings of each node
+  tried, unless they depend on the position.
+- HTML written with `disable-output-escaping` is moved into the result, not copied.
+- A match pattern that spells out `descendant-or-self::node()` is an error, as it is for
+  xsltproc; `//` is the way to write it.
+
 ## 1.0.2
 
 No changes to the code. This is the first version published by the release workflow, so
