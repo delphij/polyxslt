@@ -3,6 +3,9 @@
   "files": {
     "includes": [
       "**",
+      "!**/*.md",
+      "!**/*.yaml",
+      "!**/*.yml",
       "!dist",
       "!coverage",
       "!release",
